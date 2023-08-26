@@ -1,6 +1,6 @@
 import './App.css'
-import { Header } from '@/components/header/header.tsx'
-import { Outlet } from 'react-router-dom'
+import {Header} from '@/components/header/header.tsx'
+import {Outlet} from 'react-router-dom'
 // import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover.tsx";
 // import {Button} from "@/components/ui/button.tsx";
 //
@@ -138,7 +138,9 @@ function App() {
    return (
       <div>
          <Header />
-         <Outlet />
+         <div className="max-w-7xl mx-auto">
+            <Outlet />
+         </div>
          {/*<div className={'max-w-[1280px] mx-auto my-2 flex gap-6 flex-col'}>*/}
          {/*   <CommandPrimitive*/}
          {/*      className={'w-full'}*/}
