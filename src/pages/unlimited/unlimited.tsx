@@ -1,3 +1,3 @@
 export function UnlimitedPage() {
-   return <div>unlimited</div>
+   return <div>unlimited</div>;
 }

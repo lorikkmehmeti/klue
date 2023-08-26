@@ -1,3 +1,3 @@
-import { routerRoutes } from './Routes.tsx'
+import { routerRoutes } from './Routes.tsx';
 
-export { routerRoutes }
+export { routerRoutes };

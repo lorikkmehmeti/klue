@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom';
 
 export function Header() {
    return (
@@ -64,5 +64,5 @@ export function Header() {
             </div>
          </div>
       </div>
-   )
+   );
 }

@@ -15,6 +15,7 @@ module.exports = {
          { allowConstantExport: true },
       ],
       '@typescript-eslint/no-unsafe-call': 'warn',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
    },
    parserOptions: {
       ecmaVersion: 'latest',
@@ -22,4 +23,4 @@ module.exports = {
       project: ['./tsconfig.json', './tsconfig.node.json'],
       tsconfigRootDir: __dirname,
    },
-}
+};
