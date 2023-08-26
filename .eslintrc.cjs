@@ -11,12 +11,12 @@ module.exports = {
     plugins: ['react-refresh'],
     rules: {
         'react-refresh/only-export-components': [
-            'warn',
+            'off',
             {allowConstantExport: true},
         ],
         '@typescript-eslint/no-unsafe-call': 'warn',
         '@typescript-eslint/no-unsafe-assignment': 'off',
-        'no-console': 'warn'
+        'no-console': 'warn',
     },
     parserOptions: {
         ecmaVersion: 'latest',

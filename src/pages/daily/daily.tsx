@@ -4,7 +4,7 @@ import { useSupabase } from '@/lib/hooks/useSupabase.ts';
 
 export function DailyPage() {
    const { supabase } = useSupabase();
-   const [, setAnimeKeywords] = useState<Keyword[]>([]);
+   const [keywords, setAnimeKeywords] = useState<Keyword[]>([]);
    const [, setIsLoading] = useState<boolean>(false);
 
    async function getAnimes() {
@@ -59,5 +59,9 @@ export function DailyPage() {
             setIsLoading(false);
          });
    }, []);
-   return <div>daily</div>;
+   return (
+      <div>
+         <pre className="whitespace-pre-wrap">{JSON.stringify(keywords)}</pre>
+      </div>
+   );
 }
