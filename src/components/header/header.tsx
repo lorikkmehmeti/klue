@@ -49,7 +49,7 @@ export function Header() {
                </svg>
                <div className="flex items-center justify-between">
                   <button
-                     className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 shadow-none hover:bg-accent hover:text-accent-foreground h-8 px-4 py-2 pl-0"
+                     className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 shadow-none hover:bg-accent hover:text-accent-foreground h-8 px-2 py-2"
                      type="button"
                      id="radix-:rg:"
                      aria-haspopup="menu"
@@ -71,7 +71,6 @@ export function Header() {
                            'https://chat.vercel.ai/_next/image?url=https%3A%2F%2Fvercel.com%2Fapi%2Fwww%2Favatar%2F%3Fu%3Dlorikkmehmeti%26s%3D60&w=64&q=75'
                         }
                      />
-                     <span className="ml-2"></span>
                   </button>
                </div>
             </div>

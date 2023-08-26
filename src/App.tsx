@@ -7,6 +7,7 @@ import { CheckIcon } from '@radix-ui/react-icons'
 import { createClient } from '@supabase/supabase-js'
 import { useDebounce } from '@/lib/hooks/useDebounce.ts'
 import { Header } from '@/components/header/header.tsx'
+import {ENV} from "@/lib/constants.ts";
 // import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover.tsx";
 // import {Button} from "@/components/ui/button.tsx";
 //
@@ -59,14 +60,10 @@ interface Anime {
    anime_description: string
 }
 
-const supabase = createClient(
-   'https://xmmyubzwvtetdcptzigh.supabase.co',
-   `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhtbXl1Ynp3dnRldGRjcHR6aWdoIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTIyMTYyNTQsImV4cCI6MjAwNzc5MjI1NH0.FE30vHo-QxkxTh1JcTsoihv4S3EnTVaX1EsR_6F3-VQ`
-)
+const supabase = createClient(ENV.SUPABASE_URL, ENV.SUPABASE_KEY)
 
 function App() {
    const inputRef = React.useRef<HTMLInputElement | null>(null)
-
    const [isOpen, setOpen] = useState(false)
 
    const [selected, setSelected] = useState<Anime | null>()
@@ -80,7 +77,6 @@ function App() {
 
    const [animes, setAnimes] = useState<Anime[]>([])
 
-   console.log('haha')
    useEffect(() => {
       // if (!debouncedValue) return
       void getAnimes()

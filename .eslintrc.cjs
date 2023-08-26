@@ -14,6 +14,7 @@ module.exports = {
          'warn',
          { allowConstantExport: true },
       ],
+      '@typescript-eslint/no-unsafe-call': 'warning'
    },
    parserOptions: {
       ecmaVersion: 'latest',
