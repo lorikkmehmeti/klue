@@ -1,17 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { useSupabase } from '@/lib/providers/SupabaseClient.tsx';
-import { useDebounce } from '@/lib/hooks';
+import { useEffect, useState } from 'react';
+import { Keyword } from '@/lib/models';
+import { useSupabase } from '@/lib/hooks/useSupabase.ts';
 
 export function DailyPage() {
-   const inputRef = React.useRef<HTMLInputElement | null>(null);
    const { supabase } = useSupabase();
-   // const [, setAnimes] = useState<Anime[]>([]);
-   const [, setAnimeKeywords] = useState<any | any[]>([]);
+   const [, setAnimeKeywords] = useState<Keyword[]>([]);
    const [, setIsLoading] = useState<boolean>(false);
-   const debouncedValue = useDebounce<string>(
-      inputRef.current?.value || '',
-      500
-   );
 
    async function getAnimes() {
       setIsLoading(true);
@@ -64,6 +58,6 @@ export function DailyPage() {
          .catch(() => {
             setIsLoading(false);
          });
-   }, [debouncedValue]);
+   }, []);
    return <div>daily</div>;
 }
