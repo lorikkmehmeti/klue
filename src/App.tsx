@@ -7,7 +7,7 @@ import { CheckIcon } from '@radix-ui/react-icons'
 import { createClient } from '@supabase/supabase-js'
 import { useDebounce } from '@/lib/hooks/useDebounce.ts'
 import { Header } from '@/components/header/header.tsx'
-import {ENV} from "@/lib/constants.ts";
+import { ENV } from '@/lib/constants.ts'
 // import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover.tsx";
 // import {Button} from "@/components/ui/button.tsx";
 //

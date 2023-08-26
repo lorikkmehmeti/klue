@@ -4,17 +4,17 @@ import path from 'path'
 
 // https://vitejs.dev/config/
 export default ({ mode }) => {
-   process.env = {...process.env, ...loadEnv(mode as string, process.cwd())};
+   process.env = { ...process.env, ...loadEnv(mode as string, process.cwd()) }
    return defineConfig({
       plugins: [react()],
       server: {
-         port: 5000
+         port: 5000,
       },
       resolve: {
          alias: {
             '@': path.resolve(__dirname, './src'),
          },
       },
-      envPrefix: "K"
+      envPrefix: 'K',
    })
 }
