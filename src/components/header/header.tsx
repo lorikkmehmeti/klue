@@ -53,10 +53,10 @@ export function Header() {
                         data-nimg="1"
                         className="h-6 w-6 select-none rounded-full ring-1 ring-zinc-100/10 transition-opacity duration-300 hover:opacity-80"
                         srcSet={
-                           'https://chat.vercel.ai/_next/image?url=https%3A%2F%2Fvercel.com%2Fapi%2Fwww%2Favatar%2F%3Fu%3Dlorikkmehmeti%26s%3D60&w=64&q=75 2x'
+                           'https://i.pinimg.com/originals/09/68/5b/09685b5c2e6e57914c468969dc25ae0e.png'
                         }
                         src={
-                           'https://chat.vercel.ai/_next/image?url=https%3A%2F%2Fvercel.com%2Fapi%2Fwww%2Favatar%2F%3Fu%3Dlorikkmehmeti%26s%3D60&w=64&q=75'
+                           'https://i.pinimg.com/originals/09/68/5b/09685b5c2e6e57914c468969dc25ae0e.png'
                         }
                      />
                   </button>
