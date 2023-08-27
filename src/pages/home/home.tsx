@@ -1,13 +1,6 @@
 import { Link } from 'react-router-dom';
-import { useBreadcrumb } from '@/lib/providers/BreadcrumbProvider.tsx';
-import { useEffect } from 'react';
 
 export function Home() {
-   const { clearBreadcrumbs } = useBreadcrumb();
-
-   useEffect(() => {
-      clearBreadcrumbs();
-   }, []);
    return (
       <ul
          role="list"

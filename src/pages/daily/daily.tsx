@@ -24,7 +24,7 @@ export function DailyPage() {
    const [inputValue, setInputValue] = useState<string>('');
    const debouncedValue = useDebounce(inputRef.current?.value, 1000);
 
-   const { addBreadcrumb } = useBreadcrumb();
+   const { addBreadcrumb, clearBreadcrumbs } = useBreadcrumb();
 
    async function getKeywords() {
       setIsLoading(true);
@@ -34,10 +34,10 @@ export function DailyPage() {
          .eq('id', '8dc125eb-e46f-40f1-8755-ed6c23786d3e');
 
       if (randomAnimeQuery.error) {
-         console.error(
-            'Error fetching random anime ID:',
-            randomAnimeQuery.error.message
-         );
+         // console.error(
+         //    'Error fetching random anime ID:',
+         //    randomAnimeQuery.error.message
+         // );
          return;
       }
 
@@ -70,6 +70,10 @@ export function DailyPage() {
 
    useEffect(() => {
       addBreadcrumb({ label: 'Daily Challenge', link: '/daily' });
+
+      return () => {
+         clearBreadcrumbs();
+      };
    }, [addBreadcrumb]);
 
    useEffect(() => {
@@ -95,11 +99,9 @@ export function DailyPage() {
          .limit(!debouncedValue!.length ? 5 : 10);
 
       if (error) {
-         console.error('Error fetching random anime ID:', error.message);
+         // console.error('Error fetching random anime ID:', error.message);
          return;
       }
-
-      console.log(data);
 
       setAnimes(data as Anime[]);
    }
