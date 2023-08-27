@@ -1,6 +1,6 @@
 import './App.css';
-import {Header} from '@/components/header/header.tsx';
-import {Outlet} from 'react-router-dom';
+import { Header } from '@/components/header/header.tsx';
+import { Outlet } from 'react-router-dom';
 // import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover.tsx";
 // import {Button} from "@/components/ui/button.tsx";
 //
