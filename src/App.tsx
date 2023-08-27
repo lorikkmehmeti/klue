@@ -1,6 +1,6 @@
 import './App.css';
-import { Header } from '@/components/header/header.tsx';
-import { Outlet } from 'react-router-dom';
+import {Header} from '@/components/header/header.tsx';
+import {Outlet} from 'react-router-dom';
 // import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover.tsx";
 // import {Button} from "@/components/ui/button.tsx";
 //
@@ -136,10 +136,10 @@ function App() {
    // )
 
    return (
-      <div>
-         <div className="fixed h-screen w-full bg-gradient-to-br from-indigo-50 via-white to-blue-100"></div>
+      <div className="font-inter">
+         <div className="fixed h-screen w-full bg-gradient-to-br from-indigo-50 via-white to-blue-100 z-[-1]"></div>
          <Header />
-         <div className="max-w-7xl mx-auto lg:pt-[5rem] py-2 px-2 xl:px-0">
+         <div className="max-w-7xl mx-auto lg:pt-[5rem] py-2 px-2 xl:px-0 z-1">
             <Outlet />
          </div>
          {/*<div className={'max-w-[1280px] mx-auto my-2 flex gap-6 flex-col'}>*/}

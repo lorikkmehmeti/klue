@@ -1,6 +1,8 @@
+import React from 'react';
 import { Link } from 'react-router-dom';
 
 export function Header() {
+   const breadcrumbs = ['Home', 'Daily Challenge'];
    return (
       <div className="sticky top-0 z-50 flex h-16 w-full shrink-0 items-center justify-between border-b bg-gradient-to-b from-background/10 via-background/50 to-background/80 px-4 backdrop-blur-xl">
          <div className="flex items-center max-w-7xl w-full mx-auto">
@@ -35,32 +37,64 @@ export function Header() {
                >
                   <path d="M16.88 3.549L7.12 20.451"></path>
                </svg>
-               <div className="flex items-center justify-between">
-                  <button
-                     className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 shadow-none hover:bg-accent hover:text-accent-foreground h-8 px-2 py-2"
-                     type="button"
-                     id="radix-:rg:"
-                     aria-haspopup="menu"
-                     aria-expanded="false"
-                     data-state="closed"
-                  >
-                     <img
-                        alt="Avatar"
-                        loading="lazy"
-                        width="60"
-                        height="60"
-                        decoding="async"
-                        data-nimg="1"
-                        className="h-6 w-6 select-none rounded-full ring-1 ring-zinc-100/10 transition-opacity duration-300 hover:opacity-80"
-                        srcSet={
-                           'https://64.media.tumblr.com/a44fd2891a5c16a1c32a75eb42f2e345/7d5e3d4360544ca1-0e/s640x960/0c7074c675f8c3d417418a999451a3e45f2a1a75.jpg'
-                        }
-                        src={
-                           'https://64.media.tumblr.com/a44fd2891a5c16a1c32a75eb42f2e345/7d5e3d4360544ca1-0e/s640x960/0c7074c675f8c3d417418a999451a3e45f2a1a75.jpg'
-                        }
-                     />
-                  </button>
+               <div className="w-full flex items-center flex-wrap">
+                  {breadcrumbs.map((item, index) => {
+                     return (
+                        <React.Fragment key={index}>
+                           <a
+                              className="py-1 cursor-pointer overflow-hidden whitespace-nowrap shrink text-sm font-medium flex items-center select-none transition-all p-2 rounded-md
+                     hover:bg-zinc-300/30"
+                           >
+                              <span className="no-underline text-ellipsis whitespace-nowrap">
+                                 {item}
+                              </span>
+                           </a>
+                           {index !== breadcrumbs.length - 1 && (
+                              <div className="flex text-zinc-300 leading-0">
+                                 <svg
+                                    width="16"
+                                    height="16"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                 >
+                                    <path
+                                       d="M16 12a.804.804 0 0 0-.255-.592L9.439 5.24A.813.813 0 0 0 8.847 5a.83.83 0 0 0-.607.236.79.79 0 0 0-.24.588c0 .22.082.418.245.592L13.949 12l-5.704 5.584a.843.843 0 0 0-.245.593c0 .234.08.43.24.587a.83.83 0 0 0 .607.236c.231 0 .429-.08.592-.241l6.306-6.167c.082-.087.145-.179.189-.276A.755.755 0 0 0 16 12Z"
+                                       fill="currentColor"
+                                    ></path>
+                                 </svg>
+                              </div>
+                           )}
+                        </React.Fragment>
+                     );
+                  })}
                </div>
+            </div>
+            <div className="flex items-center justify-between flex-none ml-auto">
+               <button
+                  className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 shadow-none hover:bg-accent hover:text-accent-foreground h-8 px-2 py-2"
+                  type="button"
+                  id="radix-:rg:"
+                  aria-haspopup="menu"
+                  aria-expanded="false"
+                  data-state="closed"
+               >
+                  <img
+                     alt="Avatar"
+                     loading="lazy"
+                     width="60"
+                     height="60"
+                     decoding="async"
+                     data-nimg="1"
+                     className="h-6 w-6 select-none rounded-full ring-1 ring-zinc-100/10 transition-opacity duration-300 hover:opacity-80"
+                     srcSet={
+                        'https://64.media.tumblr.com/a44fd2891a5c16a1c32a75eb42f2e345/7d5e3d4360544ca1-0e/s640x960/0c7074c675f8c3d417418a999451a3e45f2a1a75.jpg'
+                     }
+                     src={
+                        'https://64.media.tumblr.com/a44fd2891a5c16a1c32a75eb42f2e345/7d5e3d4360544ca1-0e/s640x960/0c7074c675f8c3d417418a999451a3e45f2a1a75.jpg'
+                     }
+                  />
+               </button>
             </div>
          </div>
       </div>
