@@ -1,6 +1,13 @@
 import { Link } from 'react-router-dom';
+import { useBreadcrumb } from '@/lib/providers/BreadcrumbProvider.tsx';
+import { useEffect } from 'react';
 
 export function Home() {
+   const { clearBreadcrumbs } = useBreadcrumb();
+
+   useEffect(() => {
+      clearBreadcrumbs();
+   }, []);
    return (
       <ul
          role="list"
@@ -35,9 +42,9 @@ export function Home() {
                   </svg>
                </div>
                <h2 className="mt-6 text-base font-semibold text-zinc-800 dark:text-zinc-100">
-                  <a href="http://planetaria.tech">
+                  <span>
                      <span className="relative z-10">Daily Challenge</span>
-                  </a>
+                  </span>
                </h2>
                <p className="relative z-10 mt-2 text-sm text-zinc-600 dark:text-zinc-400 pointer-events-none">
                   Test your plot knowledge daily! Decode anime from keywords.
@@ -68,9 +75,9 @@ export function Home() {
                   </svg>
                </div>
                <h2 className="mt-6 text-base font-semibold text-zinc-800 dark:text-zinc-100">
-                  <a href="http://planetaria.tech">
+                  <span>
                      <span className="relative z-10">Unlimited Challenge</span>
-                  </a>
+                  </span>
                </h2>
                <p className="relative z-10 mt-2 text-sm text-zinc-600 dark:text-zinc-400 pointer-events-none">
                   Endless plot puzzles await! Movies/anime revealed by keywords.
@@ -94,14 +101,14 @@ export function Home() {
                   </svg>
                </div>
                <h2 className="mt-6 text-base font-semibold text-zinc-800 dark:text-zinc-100">
-                  <a href="http://planetaria.tech">
+                  <span>
                      <span className="relative z-10">
                         Challenge your friends{' '}
                         <span className="bg-gray-100 text-gray-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">
                            Coming soon
                         </span>
                      </span>
-                  </a>
+                  </span>
                </h2>
                <p className="relative z-10 mt-2 text-sm text-zinc-600 dark:text-zinc-400 pointer-events-none">
                   Compete head-to-head! Who decodes anime names faster? Battle
@@ -129,14 +136,14 @@ export function Home() {
                   </svg>
                </div>
                <h2 className="mt-6 text-base font-semibold text-zinc-800 dark:text-zinc-100">
-                  <a href="http://planetaria.tech">
+                  <span>
                      <span className="relative z-10">
                         Random Packs{' '}
                         <span className="bg-gray-100 text-gray-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">
                            Coming soon
                         </span>
                      </span>
-                  </a>
+                  </span>
                </h2>
                <p className="relative z-10 mt-2 text-sm text-zinc-600 dark:text-zinc-400 pointer-events-none">
                   Unlock the mystery! Select an anime pack, guess the titles
