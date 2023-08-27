@@ -53,10 +53,10 @@ export function Header() {
                         data-nimg="1"
                         className="h-6 w-6 select-none rounded-full ring-1 ring-zinc-100/10 transition-opacity duration-300 hover:opacity-80"
                         srcSet={
-                           'https://i.pinimg.com/originals/09/68/5b/09685b5c2e6e57914c468969dc25ae0e.png'
+                           'https://64.media.tumblr.com/a44fd2891a5c16a1c32a75eb42f2e345/7d5e3d4360544ca1-0e/s640x960/0c7074c675f8c3d417418a999451a3e45f2a1a75.jpg'
                         }
                         src={
-                           'https://i.pinimg.com/originals/09/68/5b/09685b5c2e6e57914c468969dc25ae0e.png'
+                           'https://64.media.tumblr.com/a44fd2891a5c16a1c32a75eb42f2e345/7d5e3d4360544ca1-0e/s640x960/0c7074c675f8c3d417418a999451a3e45f2a1a75.jpg'
                         }
                      />
                   </button>
