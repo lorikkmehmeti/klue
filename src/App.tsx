@@ -137,6 +137,7 @@ function App() {
 
    return (
       <div>
+         <div className="fixed h-screen w-full bg-gradient-to-br from-indigo-50 via-white to-blue-100"></div>
          <Header />
          <div className="max-w-7xl mx-auto lg:pt-[5rem] sm:px-3 lg:px-0">
             <Outlet />
