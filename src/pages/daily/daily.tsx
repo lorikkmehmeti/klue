@@ -7,6 +7,7 @@ import { CommandGroup, CommandItem } from '@/components/ui/command.tsx';
 import { cn } from '@/lib/utils.ts';
 import { CheckIcon } from '@radix-ui/react-icons';
 import { useDebounce } from '@/lib/hooks';
+import { useBreadcrumb } from '@/lib/providers/BreadcrumbProvider.tsx';
 
 export function DailyPage() {
    const { supabase } = useSupabase();
@@ -22,6 +23,8 @@ export function DailyPage() {
 
    const [inputValue, setInputValue] = useState<string>('');
    const debouncedValue = useDebounce(inputRef.current?.value, 1000);
+
+   const { addBreadcrumb } = useBreadcrumb();
 
    async function getKeywords() {
       setIsLoading(true);
@@ -64,6 +67,10 @@ export function DailyPage() {
             setIsLoading(false);
          });
    }, []);
+
+   useEffect(() => {
+      addBreadcrumb({ label: 'Daily Challenge', link: '/daily' });
+   }, [addBreadcrumb]);
 
    useEffect(() => {
       void getAnimes()

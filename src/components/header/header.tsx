@@ -1,8 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useBreadcrumb } from '@/lib/providers/BreadcrumbProvider.tsx';
 
 export function Header() {
-   const breadcrumbs = ['Home', 'Daily Challenge'];
+   const { breadcrumbs } = useBreadcrumb();
+
    return (
       <div className="sticky top-0 z-50 flex h-16 w-full shrink-0 items-center justify-between border-b bg-gradient-to-b from-background/10 via-background/50 to-background/80 px-4 backdrop-blur-xl">
          <div className="flex items-center max-w-7xl w-full mx-auto">
@@ -38,17 +40,18 @@ export function Header() {
                   <path d="M16.88 3.549L7.12 20.451"></path>
                </svg>
                <div className="w-full flex items-center flex-wrap">
-                  {breadcrumbs.map((item, index) => {
+                  {breadcrumbs.map(({ label, link }, index) => {
                      return (
                         <React.Fragment key={index}>
-                           <a
+                           <Link
+                              to={link}
                               className="py-1 cursor-pointer overflow-hidden whitespace-nowrap shrink text-sm font-medium flex items-center select-none transition-all p-2 rounded-md
                      hover:bg-zinc-300/30"
                            >
                               <span className="no-underline text-ellipsis whitespace-nowrap">
-                                 {item}
+                                 {label}
                               </span>
-                           </a>
+                           </Link>
                            {index !== breadcrumbs.length - 1 && (
                               <div className="flex text-zinc-300 leading-0">
                                  <svg
