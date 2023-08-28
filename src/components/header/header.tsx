@@ -35,7 +35,7 @@ export function Header() {
                   strokeWidth="1"
                   viewBox="0 0 24 24"
                   aria-hidden="true"
-                  className="h-6 w-6 text-muted-foreground/50"
+                  className="h-6 w-6 text-muted-foreground/50 flex-none"
                >
                   <path d="M16.88 3.549L7.12 20.451"></path>
                </svg>
