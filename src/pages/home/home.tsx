@@ -73,8 +73,8 @@ export function Home() {
                   </span>
                </h2>
                <p className="relative z-10 mt-2 text-sm text-zinc-600 dark:text-zinc-400 pointer-events-none">
-                  Endless plot puzzles await! Movies/anime revealed by keywords.
-                  Dive into limitless entertainment and guess them all.
+                  Endless plot puzzles await! Anime revealed by keywords. Dive
+                  into limitless entertainment and guess them all.
                </p>
             </Link>
          </li>
