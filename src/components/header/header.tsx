@@ -39,7 +39,7 @@ export function Header() {
                >
                   <path d="M16.88 3.549L7.12 20.451"></path>
                </svg>
-               <div className="w-full flex items-center flex-wrap">
+               <div className="w-full flex items-center flex-wrap flex-none">
                   {breadcrumbs.map(({ label, link }, index) => {
                      return (
                         <React.Fragment key={index}>

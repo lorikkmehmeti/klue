@@ -22,7 +22,7 @@ export function DailyPage() {
    const [animes, setAnimes] = useState<Anime[]>([]);
 
    const [inputValue, setInputValue] = useState<string>('');
-   const debouncedValue = useDebounce(inputRef.current?.value, 1000);
+   const debouncedValue = useDebounce(inputValue, 1000);
 
    const { addBreadcrumb, clearBreadcrumbs } = useBreadcrumb();
 
@@ -96,12 +96,15 @@ export function DailyPage() {
          .or(
             `anime_name_jp.ilike.%${debouncedValue}%,anime_name_en.ilike.%${debouncedValue}%`
          )
-         .limit(!debouncedValue!.length ? 5 : 10);
+         .limit(debouncedValue.length > 0 ? 10 : 5);
 
       if (error) {
+         console.log('error a');
          // console.error('Error fetching random anime ID:', error.message);
          return;
       }
+
+      console.log({ data }, 'hmmmmm');
 
       setAnimes(data as Anime[]);
    }
