@@ -1,3 +1,3 @@
-import { useDebounce } from '@/lib/hooks/useDebounce.ts';
+import { useDebounce } from '@/lib/hooks/use-debounce.ts';
 
 export { useDebounce };

@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {Anime, Keyword} from '@/lib/models';
+import {Keyword} from '@/lib/models';
 import {Skeleton} from '@/components/ui/skeleton.tsx';
 import {Command} from 'cmdk';
 import {CommandGroup, CommandItem, CommandList,} from '@/components/ui/command.tsx';
@@ -7,7 +7,9 @@ import {cn} from '@/lib/utils.ts';
 import {CheckIcon} from '@radix-ui/react-icons';
 import {useDebounce} from '@/lib/hooks';
 import {useBreadcrumb} from '@/lib/providers/BreadcrumbProvider.tsx';
-import {useSupabase} from "@/lib/hooks/useSupabase.ts";
+import {useKeywords} from "@/lib/hooks/use-keywords.ts";
+import {useAnimes} from "@/lib/hooks/use-animes.ts";
+import {AnimeOption} from "@/lib/models/anime.ts";
 
 // export const data = [
 //    {
@@ -121,70 +123,19 @@ import {useSupabase} from "@/lib/hooks/useSupabase.ts";
 // ];
 
 export function DailyPage() {
-   const { supabase } = useSupabase();
-   const [keywords, setAnimeKeywords] = useState<Keyword[]>([]);
-   const [loading, setIsLoading] = useState<boolean>(false);
-   const [, setLoadingAnimes] = useState<boolean>(false);
+   const [inputValue, setInputValue] = useState<string>('');
+
+   const debouncedValue = useDebounce(inputValue, 1000);
+
+   const { data: keywords, isLoading: loading } = useKeywords("8dc125eb-e46f-40f1-8755-ed6c23786d3e");
+   const { data: animes} = useAnimes(debouncedValue)
+
    const inputRef = React.useRef<HTMLInputElement | null>(null);
 
    const [isOpen, setIsOpen] = useState<boolean>(false);
-   const [selected, setSelected] = useState<Anime | null>();
-
-   const [animes, setAnimes] = useState<Anime[]>([]);
-
-   const [inputValue, setInputValue] = useState<string>('');
-   const debouncedValue = useDebounce(inputValue, 1000);
+   const [selected, setSelected] = useState<AnimeOption | null>();
 
    const { addBreadcrumb, clearBreadcrumbs } = useBreadcrumb();
-
-   async function getKeywords() {
-      setIsLoading(true);
-      const randomAnimeQuery = await supabase
-         .from('anime')
-         .select('id')
-         .eq('id', '8dc125eb-e46f-40f1-8755-ed6c23786d3e');
-
-      if (randomAnimeQuery.error) {
-         console.error(
-            'Error fetching random anime ID:',
-            randomAnimeQuery.error.message
-         );
-         return;
-      }
-
-      const randomAnimeId: string = randomAnimeQuery.data[0]?.id;
-
-      if (randomAnimeId) {
-         const { data, error } = await supabase
-            .from('keywords')
-            .select('*')
-            .eq('anime_id', randomAnimeId);
-
-         if (error) {
-            return;
-         }
-
-         setAnimeKeywords(
-            data.map((item: Keyword, index) => {
-               return {
-                  ...item,
-                  revealed: index === 0,
-               };
-            })
-         );
-      }
-   }
-
-   useEffect(() => {
-      // if (!debouncedValue) return
-      void getKeywords()
-         .then(() => {
-            setIsLoading(false);
-         })
-         .catch(() => {
-            setIsLoading(false);
-         });
-   }, []);
 
    useEffect(() => {
       addBreadcrumb({ label: 'Daily Challenge', link: '/daily' });
@@ -194,43 +145,10 @@ export function DailyPage() {
       };
    }, [addBreadcrumb]);
 
-   useEffect(() => {
-      void getAnimes()
-         .then(() => {
-            setLoadingAnimes(false);
-         })
-         .catch(() => {
-            setLoadingAnimes(false);
-         });
-   }, [debouncedValue]);
-
-   async function getAnimes() {
-      setLoadingAnimes(true);
-      const { data, error } = await supabase
-         .from('anime')
-         .select(
-            'anime_name_jp, anime_name_en, anime_description, release_date'
-         )
-         .or(
-            `anime_name_jp.ilike.%${debouncedValue}%,anime_name_en.ilike.%${debouncedValue}%`
-         )
-         .limit(debouncedValue.length > 0 ? 10 : 5);
-
-      if (error) {
-         console.error('Error fetching random anime ID:', error.message);
-         return;
-      }
-
-
-      setAnimes(data as Anime[]);
-   }
-
-   const handleSelectOption = useCallback((selectedOption: Anime) => {
-      // setInputValue(selectedOption.anime_name_en);
+   const handleSelectOption = useCallback((selectedOption: AnimeOption) => {
       setSelected(selectedOption);
       setInputValue(selectedOption.anime_name_jp);
-      // This is a hack to prevent the input from being focused after the user selects an option
-      // We can call this hack: "The next tick"
+
       setTimeout(() => {
          inputRef?.current?.blur();
       }, 0);
@@ -238,16 +156,15 @@ export function DailyPage() {
 
    const handleBlur = useCallback(() => {
       setIsOpen(false);
-      // setAnimes([]);
-      // setInputValue(selected?.anime_name_en || "");
    }, [selected]);
 
    const handleKeywordClick = (index: number) => {
-      if (keywords[index].revealed) return;
-      const updatedKeywords: Keyword[] = [...keywords]; // Create a copy of the array
-      updatedKeywords[index].revealed = true; // Modify the desired property
+      console.log(index);
+      // if (keywords[index].revealed) return;
+      // const updatedKeywords: Keyword[] = [...keywords]; // Create a copy of the array
+      // updatedKeywords[index].revealed = true; // Modify the desired property
 
-      setAnimeKeywords(updatedKeywords); // Update the state with the modified copy
+      // setAnimeKeywords(updatedKeywords); // Update the state with the modified copy
    };
 
    return (
@@ -271,7 +188,7 @@ export function DailyPage() {
                      {isOpen ? (
                         <div className="absolute top-0 z-20 w-full border bg-white rounded-bl-xl rounded-br-xl outline-none animate-in fade-in-0 zoom-in-95">
                            <CommandList>
-                              {animes.length > 0 ? (
+                              {animes && animes?.length > 0 ? (
                                  <CommandGroup
                                     style={{
                                        maxHeight: '300px',
@@ -279,7 +196,7 @@ export function DailyPage() {
                                     }}
                                     className="p-2"
                                  >
-                                    {animes.map((option: Anime, index) => {
+                                    {animes?.map((option: AnimeOption, index: number) => {
                                        const isSelected =
                                           selected?.anime_name_jp ===
                                           option.anime_name_jp;
@@ -327,14 +244,13 @@ export function DailyPage() {
               })
             : null}
          <div className="pt-2">
-            {!loading && keywords.length
-               ? keywords.map(({ keyword, revealed }, index) => {
+            {!loading && keywords?.length
+               ? keywords.map(({ keyword, revealed }: Keyword, index) => {
                     return (
                        <button
                           key={index}
                           title={!revealed ? `Click to reveal` : ''}
                           onClick={() => handleKeywordClick(index)}
-                          style={{ filter: revealed ? '' : 'blur(5px)' }}
                           className="w-full text-sm bg-white shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0 px-2 py-1 rounded-md flex items-center transition-colors mb-2"
                        >
                           <span className="flex px-3 py-1">
