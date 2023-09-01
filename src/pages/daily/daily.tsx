@@ -1,13 +1,124 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { Anime, Keyword } from '@/lib/models';
-import { useSupabase } from '@/lib/hooks/useSupabase.ts';
-import { Skeleton } from '@/components/ui/skeleton.tsx';
-import { Command } from 'cmdk';
-import { CommandGroup, CommandItem } from '@/components/ui/command.tsx';
-import { cn } from '@/lib/utils.ts';
-import { CheckIcon } from '@radix-ui/react-icons';
-import { useDebounce } from '@/lib/hooks';
-import { useBreadcrumb } from '@/lib/providers/BreadcrumbProvider.tsx';
+import React, {useCallback, useEffect, useState} from 'react';
+import {Anime, Keyword} from '@/lib/models';
+import {Skeleton} from '@/components/ui/skeleton.tsx';
+import {Command} from 'cmdk';
+import {CommandGroup, CommandItem, CommandList,} from '@/components/ui/command.tsx';
+import {cn} from '@/lib/utils.ts';
+import {CheckIcon} from '@radix-ui/react-icons';
+import {useDebounce} from '@/lib/hooks';
+import {useBreadcrumb} from '@/lib/providers/BreadcrumbProvider.tsx';
+import {useSupabase} from "@/lib/hooks/useSupabase.ts";
+
+// export const data = [
+//    {
+//       anime_name_jp: 'Jujutsu Kaisen',
+//       anime_name_en: 'Jujutsu Kaisen',
+//       anime_description:
+//          'In a world of curses and spirits, students wield their own powers to battle malevolent forces',
+//       release_date: '2020-10-03',
+//    },
+//    {
+//       anime_name_jp: 'Hagane no Renkinjutsushi',
+//       anime_name_en: 'Fullmetal Alchemist',
+//       anime_description:
+//          "Alchemical quests and brothers' journey to restore their bodies",
+//       release_date: '2009-04-05',
+//    },
+//    {
+//       anime_name_jp: 'Mob Psycho 100',
+//       anime_name_en: 'Mob Psycho 100',
+//       anime_description:
+//          'Psychic Mob navigates adolescence with unique powers and life lessons',
+//       release_date: '2016-07-11',
+//    },
+//    {
+//       anime_name_jp: 'Grand Blue',
+//       anime_name_en: 'Grand Blue',
+//       anime_description:
+//          "Iori navigates college life filled with alcohol and diving hilarity at his uncle's shop",
+//       release_date: '2018-07-14',
+//    },
+//    {
+//       anime_name_jp: 'Bleach',
+//       anime_name_en: 'Bleach',
+//       anime_description:
+//          "Ichigo Kurosaki's life transforms when he becomes a Soul Reaper, defending humans from dark entities",
+//       release_date: '2004-10-05',
+//    },
+// ];
+
+// const animeKeywords: Keyword[] = [
+//    {
+//       "id": "26a7a1d1-7f6f-4507-8696-23a4d6bb8109",
+//       "keyword": "Giants",
+//       "anime_id": "8dc125eb-e46f-40f1-8755-ed6c23786d3e",
+//       "updated_at": "2023-08-19T17:45:04.013722+00:00",
+//       "created_at": "2023-08-19T17:45:04.013722+00:00"
+//    },
+//    {
+//       "id": "8b5d72ef-a5ed-4416-a136-dd3f83c45dde",
+//       "keyword": "Walls",
+//       "anime_id": "8dc125eb-e46f-40f1-8755-ed6c23786d3e",
+//       "updated_at": "2023-08-19T17:45:04.013722+00:00",
+//       "created_at": "2023-08-19T17:45:04.013722+00:00"
+//    },
+//    {
+//       "id": "4b11c3c3-45cd-4368-9674-0884bac652cc",
+//       "keyword": "Military",
+//       "anime_id": "8dc125eb-e46f-40f1-8755-ed6c23786d3e",
+//       "updated_at": "2023-08-19T17:45:04.013722+00:00",
+//       "created_at": "2023-08-19T17:45:04.013722+00:00"
+//    },
+//    {
+//       "id": "a330a22a-d96f-4af8-a7cc-c160828652aa",
+//       "keyword": "Survival",
+//       "anime_id": "8dc125eb-e46f-40f1-8755-ed6c23786d3e",
+//       "updated_at": "2023-08-19T17:45:04.013722+00:00",
+//       "created_at": "2023-08-19T17:45:04.013722+00:00"
+//    },
+//    {
+//       "id": "8e676d58-6f4a-439a-b4ea-b9b1f626eccb",
+//       "keyword": "Trauma",
+//       "anime_id": "8dc125eb-e46f-40f1-8755-ed6c23786d3e",
+//       "updated_at": "2023-08-19T17:45:04.013722+00:00",
+//       "created_at": "2023-08-19T17:45:04.013722+00:00"
+//    },
+//    {
+//       "id": "b30cd7e9-3fe9-4b6f-9c20-66328b3d402e",
+//       "keyword": "Mystery",
+//       "anime_id": "8dc125eb-e46f-40f1-8755-ed6c23786d3e",
+//       "updated_at": "2023-08-19T17:45:04.013722+00:00",
+//       "created_at": "2023-08-19T17:45:04.013722+00:00"
+//    },
+//    {
+//       "id": "462c0c2f-5f18-43d6-9ae8-ab6bcf23b52a",
+//       "keyword": "Origin",
+//       "anime_id": "8dc125eb-e46f-40f1-8755-ed6c23786d3e",
+//       "updated_at": "2023-08-19T17:45:04.013722+00:00",
+//       "created_at": "2023-08-19T17:45:04.013722+00:00"
+//    },
+//    {
+//       "id": "9ee760cd-f350-45fa-bf83-baf4d83a4553",
+//       "keyword": "Revenge",
+//       "anime_id": "8dc125eb-e46f-40f1-8755-ed6c23786d3e",
+//       "updated_at": "2023-08-19T17:45:04.013722+00:00",
+//       "created_at": "2023-08-19T17:45:04.013722+00:00"
+//    },
+//    {
+//       "id": "a6799367-08e6-4059-8c5d-16b9e9ab26a3",
+//       "keyword": "Hope",
+//       "anime_id": "8dc125eb-e46f-40f1-8755-ed6c23786d3e",
+//       "updated_at": "2023-08-19T17:45:04.013722+00:00",
+//       "created_at": "2023-08-19T17:45:04.013722+00:00"
+//    },
+//    {
+//       "id": "7faac361-a980-4a24-8f5d-339c45f3c45e",
+//       "keyword": "Courage",
+//       "anime_id": "8dc125eb-e46f-40f1-8755-ed6c23786d3e",
+//       "updated_at": "2023-08-19T17:45:04.013722+00:00",
+//       "created_at": "2023-08-19T17:45:04.013722+00:00"
+//    }
+// ];
 
 export function DailyPage() {
    const { supabase } = useSupabase();
@@ -34,10 +145,10 @@ export function DailyPage() {
          .eq('id', '8dc125eb-e46f-40f1-8755-ed6c23786d3e');
 
       if (randomAnimeQuery.error) {
-         // console.error(
-         //    'Error fetching random anime ID:',
-         //    randomAnimeQuery.error.message
-         // );
+         console.error(
+            'Error fetching random anime ID:',
+            randomAnimeQuery.error.message
+         );
          return;
       }
 
@@ -53,7 +164,14 @@ export function DailyPage() {
             return;
          }
 
-         setAnimeKeywords(data);
+         setAnimeKeywords(
+            data.map((item: Keyword, index) => {
+               return {
+                  ...item,
+                  revealed: index === 0,
+               };
+            })
+         );
       }
    }
 
@@ -99,12 +217,10 @@ export function DailyPage() {
          .limit(debouncedValue.length > 0 ? 10 : 5);
 
       if (error) {
-         console.log('error a');
-         // console.error('Error fetching random anime ID:', error.message);
+         console.error('Error fetching random anime ID:', error.message);
          return;
       }
 
-      console.log({ data }, 'hmmmmm');
 
       setAnimes(data as Anime[]);
    }
@@ -126,9 +242,17 @@ export function DailyPage() {
       // setInputValue(selected?.anime_name_en || "");
    }, [selected]);
 
+   const handleKeywordClick = (index: number) => {
+      if (keywords[index].revealed) return;
+      const updatedKeywords: Keyword[] = [...keywords]; // Create a copy of the array
+      updatedKeywords[index].revealed = true; // Modify the desired property
+
+      setAnimeKeywords(updatedKeywords); // Update the state with the modified copy
+   };
+
    return (
       <div>
-         <div className="flex flex-col w-full bg-white shadow-card rounded-lg mb-4 sticky z-49 top-[64px] left-0 z-10">
+         <div className="flex flex-col w-full shadow-card rounded-lg mb-10 max-sm:mb-5 sticky z-49 top-[64px] left-0 z-10">
             <div className="flex flex-row gap-10 items-center flex-1">
                <Command className="w-full z-50" shouldFilter={false}>
                   <Command.Input
@@ -139,20 +263,21 @@ export function DailyPage() {
                         setInputValue(val);
                      }}
                      onFocus={() => setIsOpen(true)}
-                     placeholder={'Search anime'}
+                     placeholder='Search anime'
                      disabled={false}
-                     className="w-full rounded-lg border border-border py-1 xl:px-5 px-3 placeholder:text-tGray-600 text-[16px] lg:h-[54px] leading-7 flex-1 bg-tGray-100"
+                     className={`w-full transition-all border border-border ${isOpen ? 'rounded-tl-xl rounded-tr-xl border-b-transparent' : 'rounded-xl'} py-1 xl:px-5 px-3 placeholder:text-tGray-600 text-[16px] lg:h-[54px] leading-7 flex-1 bg-tGray-100`}
                   />
-                  <div className={`bg-stone-50 relative z-50`}>
-                     {isOpen && (
-                        <div className="absolute top-0 z-20 w-full rounded-xl bg-stone-50 outline-none animate-in fade-in-0 zoom-in-95">
-                           <Command.List className="ring-1 ring-slate-200 rounded-lg">
+                  <div className={`relative z-50`}>
+                     {isOpen ? (
+                        <div className="absolute top-0 z-20 w-full border bg-white rounded-bl-xl rounded-br-xl outline-none animate-in fade-in-0 zoom-in-95">
+                           <CommandList>
                               {animes.length > 0 ? (
                                  <CommandGroup
                                     style={{
                                        maxHeight: '300px',
                                        overflowY: 'auto',
                                     }}
+                                    className="p-2"
                                  >
                                     {animes.map((option: Anime, index) => {
                                        const isSelected =
@@ -184,9 +309,9 @@ export function DailyPage() {
                                     })}
                                  </CommandGroup>
                               ) : null}
-                           </Command.List>
+                           </CommandList>
                         </div>
-                     )}
+                     ) : null}
                   </div>
                </Command>
             </div>
@@ -196,17 +321,20 @@ export function DailyPage() {
                  return (
                     <Skeleton
                        key={index}
-                       className="w-full h-[32px] mb-3 rounded-md bg-stone-200 z-0"
+                       className="w-full h-[32px] mb-3 rounded-md bg-zinc-200/50  z-0"
                     />
                  );
               })
             : null}
          <div className="pt-2">
             {!loading && keywords.length
-               ? keywords.map(({ keyword }, index) => {
+               ? keywords.map(({ keyword, revealed }, index) => {
                     return (
                        <button
                           key={index}
+                          title={!revealed ? `Click to reveal` : ''}
+                          onClick={() => handleKeywordClick(index)}
+                          style={{ filter: revealed ? '' : 'blur(5px)' }}
                           className="w-full text-sm bg-white shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0 px-2 py-1 rounded-md flex items-center transition-colors mb-2"
                        >
                           <span className="flex px-3 py-1">

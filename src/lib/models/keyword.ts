@@ -4,4 +4,5 @@ export interface Keyword {
    anime_id: string;
    updated_at: string;
    created_at: string;
+   revealed?: boolean;
 }
