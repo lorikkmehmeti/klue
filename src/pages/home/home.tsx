@@ -6,8 +6,8 @@ export function Home() {
          role="list"
          className="grid grid-cols-1 gap-8 sm:grid-cols-1 lg:grid-cols-2"
       >
-         <li className="relative flex flex-col items-start p-6 hover:bg-zinc-800/5 rounded-md border border-transparent hover:border-zinc-800/5 transition-all">
-            <Link to="/daily">
+         <li className="relative flex flex-col items-start hover:bg-zinc-800/5 rounded-md border border-transparent hover:border-zinc-800/5 transition-all">
+            <Link to="/daily" className="p-6">
                <div className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0">
                   <svg
                      xmlns="http://www.w3.org/2000/svg"
@@ -45,8 +45,8 @@ export function Home() {
                </p>
             </Link>
          </li>
-         <li className="relative flex flex-col items-start p-6 hover:bg-zinc-800/5 rounded-md border border-transparent hover:border-zinc-800/5 transition-all">
-            <Link to="/unlimited">
+         <li className="relative flex flex-col items-start hover:bg-zinc-800/5 rounded-md border border-transparent hover:border-zinc-800/5 transition-all">
+            <Link to="/unlimited" className="p-6">
                <div className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0">
                   <svg
                      xmlns="http://www.w3.org/2000/svg"
@@ -78,8 +78,11 @@ export function Home() {
                </p>
             </Link>
          </li>
-         <li className="pointer-events-none disabled:opacity-30 relative flex flex-col items-start p-6 hover:bg-zinc-800/5 rounded-md border border-transparent hover:border-zinc-800/5 transition-all">
-            <Link to="/" className="disabled pointer-events-none opacity-70">
+         <li className="pointer-events-none disabled:opacity-30 relative flex flex-col items-start hover:bg-zinc-800/5 rounded-md border border-transparent hover:border-zinc-800/5 transition-all">
+            <Link
+               to="/"
+               className="disabled pointer-events-none opacity-70 p-6"
+            >
                <div className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0">
                   <svg
                      xmlns="http://www.w3.org/2000/svg"
@@ -109,8 +112,11 @@ export function Home() {
                </p>
             </Link>
          </li>
-         <li className="pointer-events-none disabled:opacity-30 relative flex flex-col items-start p-6 hover:bg-zinc-800/5 rounded-md border border-transparent hover:border-zinc-800/5 transition-all">
-            <Link to="/" className="disabled pointer-events-none opacity-70">
+         <li className="pointer-events-none disabled:opacity-30 relative flex flex-col items-start hover:bg-zinc-800/5 rounded-md border border-transparent hover:border-zinc-800/5 transition-all">
+            <Link
+               to="/"
+               className="disabled pointer-events-none opacity-70 p-6"
+            >
                <div className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0">
                   <svg
                      xmlns="http://www.w3.org/2000/svg"
