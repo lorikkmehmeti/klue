@@ -17,12 +17,12 @@ const queryClient = new QueryClient({
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
    <React.StrictMode>
-       <QueryClientProvider client={queryClient}>
-           <SupabaseProvider>
-               <BreadcrumbProvider>
-                   <RouterProvider router={router} />
-               </BreadcrumbProvider>
-           </SupabaseProvider>
-       </QueryClientProvider>
+      <QueryClientProvider client={queryClient}>
+         <SupabaseProvider>
+            <BreadcrumbProvider>
+               <RouterProvider router={router} />
+            </BreadcrumbProvider>
+         </SupabaseProvider>
+      </QueryClientProvider>
    </React.StrictMode>
 );

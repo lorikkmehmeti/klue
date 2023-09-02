@@ -1,15 +1,12 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {Keyword} from '@/lib/models';
+import {AnimeOption, Keyword} from '@/lib/models';
 import {Skeleton} from '@/components/ui/skeleton.tsx';
 import {Command} from 'cmdk';
 import {CommandGroup, CommandItem, CommandList,} from '@/components/ui/command.tsx';
 import {cn} from '@/lib/utils.ts';
 import {CheckIcon} from '@radix-ui/react-icons';
-import {useDebounce} from '@/lib/hooks';
+import {useAnimes, useDebounce, useKeywords} from '@/lib/hooks';
 import {useBreadcrumb} from '@/lib/providers/BreadcrumbProvider.tsx';
-import {useKeywords} from "@/lib/hooks/use-keywords.ts";
-import {useAnimes} from "@/lib/hooks/use-animes.ts";
-import {AnimeOption} from "@/lib/models/anime.ts";
 
 // export const data = [
 //    {
@@ -127,8 +124,10 @@ export function DailyPage() {
 
    const debouncedValue = useDebounce(inputValue, 1000);
 
-   const { data: keywords, isLoading: loading } = useKeywords("8dc125eb-e46f-40f1-8755-ed6c23786d3e");
-   const { data: animes} = useAnimes(debouncedValue)
+   // const { data: anime } = useAnime("8dc125eb-e46f-40f1-8755-ed6c23786d3e")
+
+   const { data: keywords, isLoading: loading } = useKeywords("764c2e6f-eb51-43fe-9a73-104fa0eef759");
+   const { data: animes } = useAnimes(debouncedValue);
 
    const inputRef = React.useRef<HTMLInputElement | null>(null);
 
@@ -180,9 +179,13 @@ export function DailyPage() {
                         setInputValue(val);
                      }}
                      onFocus={() => setIsOpen(true)}
-                     placeholder='Search anime'
+                     placeholder="Search anime"
                      disabled={false}
-                     className={`w-full transition-all border border-border ${isOpen ? 'rounded-tl-xl rounded-tr-xl border-b-transparent' : 'rounded-xl'} py-1 xl:px-5 px-3 placeholder:text-tGray-600 text-[16px] lg:h-[54px] leading-7 flex-1 bg-tGray-100`}
+                     className={`w-full transition-all border border-border ${
+                        isOpen
+                           ? 'rounded-tl-xl rounded-tr-xl border-b-transparent'
+                           : 'rounded-xl'
+                     } py-1 xl:px-5 px-3 placeholder:text-tGray-600 text-[16px] lg:h-[54px] leading-7 flex-1 bg-tGray-100`}
                   />
                   <div className={`relative z-50`}>
                      {isOpen ? (
@@ -196,34 +199,40 @@ export function DailyPage() {
                                     }}
                                     className="p-2"
                                  >
-                                    {animes?.map((option: AnimeOption, index: number) => {
-                                       const isSelected =
-                                          selected?.anime_name_jp ===
-                                          option.anime_name_jp;
-                                       return (
-                                          <CommandItem
-                                             key={option.anime_name_jp + index}
-                                             value={option.anime_name_jp}
-                                             onMouseDown={(event) => {
-                                                event.preventDefault();
-                                                event.stopPropagation();
-                                             }}
-                                             onSelect={() =>
-                                                handleSelectOption(option)
-                                             }
-                                             className={cn([
-                                                'flex items-center gap-2 w-full',
-                                                !isSelected ? 'pl-8' : null,
-                                             ])}
-                                          >
-                                             {isSelected ? <CheckIcon /> : null}
-                                             {option.anime_name_jp ===
-                                             option.anime_name_en
-                                                ? option.anime_name_jp
-                                                : `${option.anime_name_jp} / ${option.anime_name_en}`}
-                                          </CommandItem>
-                                       );
-                                    })}
+                                    {animes?.map(
+                                       (option: AnimeOption, index: number) => {
+                                          const isSelected =
+                                             selected?.anime_name_jp ===
+                                             option.anime_name_jp;
+                                          return (
+                                             <CommandItem
+                                                key={
+                                                   option.anime_name_jp + index
+                                                }
+                                                value={option.anime_name_jp}
+                                                onMouseDown={(event) => {
+                                                   event.preventDefault();
+                                                   event.stopPropagation();
+                                                }}
+                                                onSelect={() =>
+                                                   handleSelectOption(option)
+                                                }
+                                                className={cn([
+                                                   'flex items-center gap-2 w-full',
+                                                   !isSelected ? 'pl-8' : null,
+                                                ])}
+                                             >
+                                                {isSelected ? (
+                                                   <CheckIcon />
+                                                ) : null}
+                                                {option.anime_name_jp ===
+                                                option.anime_name_en
+                                                   ? option.anime_name_jp
+                                                   : `${option.anime_name_jp} / ${option.anime_name_en}`}
+                                             </CommandItem>
+                                          );
+                                       }
+                                    )}
                                  </CommandGroup>
                               ) : null}
                            </CommandList>

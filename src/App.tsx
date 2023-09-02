@@ -1,6 +1,6 @@
 import './App.css';
-import {Header} from '@/components/header/header.tsx';
-import {Outlet} from 'react-router-dom';
+import { Header } from '@/components/header/header.tsx';
+import { Outlet } from 'react-router-dom';
 // import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover.tsx";
 // import {Button} from "@/components/ui/button.tsx";
 //
@@ -72,7 +72,7 @@ function App() {
    //
    // useEffect(() => {
    //    // if (!debouncedValue) return
-   //    void getAnimes()
+   //    void animesApi()
    //       .then(() => {
    //          setIsLoading(false)
    //       })
@@ -81,7 +81,7 @@ function App() {
    //       })
    // }, [debouncedValue])
    //
-   // async function getAnimes() {
+   // async function animesApi() {
    //    setIsLoading(true)
    //    const { data } = await supabase
    //       .from('anime')
