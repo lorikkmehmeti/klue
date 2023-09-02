@@ -1,138 +1,48 @@
-import React, {useCallback, useEffect, useState} from 'react';
-import {AnimeOption, Keyword} from '@/lib/models';
-import {Skeleton} from '@/components/ui/skeleton.tsx';
-import {Command} from 'cmdk';
-import {CommandGroup, CommandItem, CommandList,} from '@/components/ui/command.tsx';
-import {cn} from '@/lib/utils.ts';
-import {CheckIcon} from '@radix-ui/react-icons';
-import {useAnimes, useDebounce, useKeywords} from '@/lib/hooks';
-import {useBreadcrumb} from '@/lib/providers/BreadcrumbProvider.tsx';
-
-// export const data = [
-//    {
-//       anime_name_jp: 'Jujutsu Kaisen',
-//       anime_name_en: 'Jujutsu Kaisen',
-//       anime_description:
-//          'In a world of curses and spirits, students wield their own powers to battle malevolent forces',
-//       release_date: '2020-10-03',
-//    },
-//    {
-//       anime_name_jp: 'Hagane no Renkinjutsushi',
-//       anime_name_en: 'Fullmetal Alchemist',
-//       anime_description:
-//          "Alchemical quests and brothers' journey to restore their bodies",
-//       release_date: '2009-04-05',
-//    },
-//    {
-//       anime_name_jp: 'Mob Psycho 100',
-//       anime_name_en: 'Mob Psycho 100',
-//       anime_description:
-//          'Psychic Mob navigates adolescence with unique powers and life lessons',
-//       release_date: '2016-07-11',
-//    },
-//    {
-//       anime_name_jp: 'Grand Blue',
-//       anime_name_en: 'Grand Blue',
-//       anime_description:
-//          "Iori navigates college life filled with alcohol and diving hilarity at his uncle's shop",
-//       release_date: '2018-07-14',
-//    },
-//    {
-//       anime_name_jp: 'Bleach',
-//       anime_name_en: 'Bleach',
-//       anime_description:
-//          "Ichigo Kurosaki's life transforms when he becomes a Soul Reaper, defending humans from dark entities",
-//       release_date: '2004-10-05',
-//    },
-// ];
-
-// const animeKeywords: Keyword[] = [
-//    {
-//       "id": "26a7a1d1-7f6f-4507-8696-23a4d6bb8109",
-//       "keyword": "Giants",
-//       "anime_id": "8dc125eb-e46f-40f1-8755-ed6c23786d3e",
-//       "updated_at": "2023-08-19T17:45:04.013722+00:00",
-//       "created_at": "2023-08-19T17:45:04.013722+00:00"
-//    },
-//    {
-//       "id": "8b5d72ef-a5ed-4416-a136-dd3f83c45dde",
-//       "keyword": "Walls",
-//       "anime_id": "8dc125eb-e46f-40f1-8755-ed6c23786d3e",
-//       "updated_at": "2023-08-19T17:45:04.013722+00:00",
-//       "created_at": "2023-08-19T17:45:04.013722+00:00"
-//    },
-//    {
-//       "id": "4b11c3c3-45cd-4368-9674-0884bac652cc",
-//       "keyword": "Military",
-//       "anime_id": "8dc125eb-e46f-40f1-8755-ed6c23786d3e",
-//       "updated_at": "2023-08-19T17:45:04.013722+00:00",
-//       "created_at": "2023-08-19T17:45:04.013722+00:00"
-//    },
-//    {
-//       "id": "a330a22a-d96f-4af8-a7cc-c160828652aa",
-//       "keyword": "Survival",
-//       "anime_id": "8dc125eb-e46f-40f1-8755-ed6c23786d3e",
-//       "updated_at": "2023-08-19T17:45:04.013722+00:00",
-//       "created_at": "2023-08-19T17:45:04.013722+00:00"
-//    },
-//    {
-//       "id": "8e676d58-6f4a-439a-b4ea-b9b1f626eccb",
-//       "keyword": "Trauma",
-//       "anime_id": "8dc125eb-e46f-40f1-8755-ed6c23786d3e",
-//       "updated_at": "2023-08-19T17:45:04.013722+00:00",
-//       "created_at": "2023-08-19T17:45:04.013722+00:00"
-//    },
-//    {
-//       "id": "b30cd7e9-3fe9-4b6f-9c20-66328b3d402e",
-//       "keyword": "Mystery",
-//       "anime_id": "8dc125eb-e46f-40f1-8755-ed6c23786d3e",
-//       "updated_at": "2023-08-19T17:45:04.013722+00:00",
-//       "created_at": "2023-08-19T17:45:04.013722+00:00"
-//    },
-//    {
-//       "id": "462c0c2f-5f18-43d6-9ae8-ab6bcf23b52a",
-//       "keyword": "Origin",
-//       "anime_id": "8dc125eb-e46f-40f1-8755-ed6c23786d3e",
-//       "updated_at": "2023-08-19T17:45:04.013722+00:00",
-//       "created_at": "2023-08-19T17:45:04.013722+00:00"
-//    },
-//    {
-//       "id": "9ee760cd-f350-45fa-bf83-baf4d83a4553",
-//       "keyword": "Revenge",
-//       "anime_id": "8dc125eb-e46f-40f1-8755-ed6c23786d3e",
-//       "updated_at": "2023-08-19T17:45:04.013722+00:00",
-//       "created_at": "2023-08-19T17:45:04.013722+00:00"
-//    },
-//    {
-//       "id": "a6799367-08e6-4059-8c5d-16b9e9ab26a3",
-//       "keyword": "Hope",
-//       "anime_id": "8dc125eb-e46f-40f1-8755-ed6c23786d3e",
-//       "updated_at": "2023-08-19T17:45:04.013722+00:00",
-//       "created_at": "2023-08-19T17:45:04.013722+00:00"
-//    },
-//    {
-//       "id": "7faac361-a980-4a24-8f5d-339c45f3c45e",
-//       "keyword": "Courage",
-//       "anime_id": "8dc125eb-e46f-40f1-8755-ed6c23786d3e",
-//       "updated_at": "2023-08-19T17:45:04.013722+00:00",
-//       "created_at": "2023-08-19T17:45:04.013722+00:00"
-//    }
-// ];
+import React, { ElementRef, useCallback, useEffect, useState } from 'react';
+import { Anime, AnimeOption, Keyword } from '@/lib/models';
+import { Skeleton } from '@/components/ui/skeleton.tsx';
+import { Command } from 'cmdk';
+import {
+   CommandGroup,
+   CommandItem,
+   CommandList,
+} from '@/components/ui/command.tsx';
+import { cn } from '@/lib/utils.ts';
+import { CheckIcon } from '@radix-ui/react-icons';
+import { useAnimes, useDebounce, useKeywords, useSupabase } from '@/lib/hooks';
+import { useBreadcrumb } from '@/lib/providers/BreadcrumbProvider.tsx';
+import { useDailyAnime } from '@/lib/hooks/use-animes.ts';
+import { DailyRecord } from '@/lib/models/daily.ts';
+import { getAnimeByColumn } from '@/lib/api/animes-api.ts';
 
 export function DailyPage() {
+   const inputRef = React.useRef<ElementRef<'input'> | null>(null);
+
+   const client = useSupabase();
+
    const [inputValue, setInputValue] = useState<string>('');
-
    const debouncedValue = useDebounce(inputValue, 1000);
-
-   // const { data: anime } = useAnime("8dc125eb-e46f-40f1-8755-ed6c23786d3e")
-
-   const { data: keywords, isLoading: loading } = useKeywords("764c2e6f-eb51-43fe-9a73-104fa0eef759");
-   const { data: animes } = useAnimes(debouncedValue);
-
-   const inputRef = React.useRef<HTMLInputElement | null>(null);
 
    const [isOpen, setIsOpen] = useState<boolean>(false);
    const [selected, setSelected] = useState<AnimeOption | null>();
+
+   // const { data: answer } = useCheckAnswer({
+   //    column: 'anime_name_jp',
+   //    value: selected?.anime_name_jp,
+   // });
+
+   // console.log('ANSWER: ', { answer });
+
+   // get the daily anime
+   const { data: anime } = useDailyAnime();
+
+   // get the keywords for the daily anime
+   const { data: keywords, isLoading: loading } = useKeywords(
+      (anime as DailyRecord)?.anime_id
+   );
+
+   // get the anime list for the search
+   const { data: animes } = useAnimes(debouncedValue);
 
    const { addBreadcrumb, clearBreadcrumbs } = useBreadcrumb();
 
@@ -144,14 +54,38 @@ export function DailyPage() {
       };
    }, [addBreadcrumb]);
 
-   const handleSelectOption = useCallback((selectedOption: AnimeOption) => {
+   async function CheckAnswer(selected: AnimeOption) {
+      const answer = await getAnimeByColumn(client, {
+         column: 'anime_name_jp',
+         value: selected?.anime_name_jp,
+      }).then((result) => result?.data as Anime);
+
+      if (answer.id === (anime as DailyRecord).anime_id) {
+         window.alert('e sakte');
+      } else {
+         window.alert('e pasakte');
+         setInputValue('');
+         setSelected(null);
+      }
+   }
+
+   const handleSelectOption = (selectedOption: AnimeOption) => {
       setSelected(selectedOption);
       setInputValue(selectedOption.anime_name_jp);
+
+      void CheckAnswer(selectedOption);
+
+      // if (answer !== undefined && anime !== undefined) {
+      //    console.log({ answer, anime });
+      //    if ((answer as Anime)?.id === anime?.anime_id) {
+      //       window.alert('e sakte');
+      //    }
+      // }
 
       setTimeout(() => {
          inputRef?.current?.blur();
       }, 0);
-   }, []);
+   };
 
    const handleBlur = useCallback(() => {
       setIsOpen(false);
@@ -159,6 +93,7 @@ export function DailyPage() {
 
    const handleKeywordClick = (index: number) => {
       console.log(index);
+
       // if (keywords[index].revealed) return;
       // const updatedKeywords: Keyword[] = [...keywords]; // Create a copy of the array
       // updatedKeywords[index].revealed = true; // Modify the desired property

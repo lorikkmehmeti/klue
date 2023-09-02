@@ -15,11 +15,21 @@ export async function getAnimesBySearch(
       .limit(limit);
 }
 
-export async function getAnime(client: SupabaseClient, id: string) {
+export async function getDailyWord(client: SupabaseClient) {
+   const currentDate = new Date(); // Get the current date
+   const options: Intl.DateTimeFormatOptions = {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+   };
+
+   const date = new Intl.DateTimeFormat('en-US', options).format(currentDate);
+
    return client
-      .from(TABLES.ANIME_TABLE)
-      .select('id, anime_name_jp, anime_name_en, anime_description, release_date')
-      .eq('id', id);
+      .from(TABLES.DAILY_TABLE)
+      .select('*')
+      .eq('display_date', date)
+      .single();
 }
 
 export async function getRandomAnime(client: SupabaseClient, id: string) {
@@ -27,4 +37,15 @@ export async function getRandomAnime(client: SupabaseClient, id: string) {
       .from(TABLES.ANIME_TABLE)
       .select('anime_name_jp, anime_name_en, anime_description, release_date')
       .eq('id', id);
+}
+
+export async function getAnimeByColumn(
+   client: SupabaseClient,
+   { column = 'id', value }: { column: string; value: string | undefined }
+) {
+   return client
+      .from(TABLES.ANIME_TABLE)
+      .select('*')
+      .eq(column, value)
+      .single();
 }
