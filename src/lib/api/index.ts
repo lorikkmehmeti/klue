@@ -1,8 +1,4 @@
-import {
-   getAnime,
-   getAnimesBySearch,
-   getRandomAnime,
-} from '@/lib/api/animes-api.ts';
+import { getAnimesBySearch, getRandomAnime } from '@/lib/api/animes-api.ts';
 import { getKeywords } from '@/lib/api/keywords-api.ts';
 
-export { getAnime, getAnimesBySearch, getRandomAnime, getKeywords };
+export { getAnimesBySearch, getRandomAnime, getKeywords };
