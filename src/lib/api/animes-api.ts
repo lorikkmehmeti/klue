@@ -16,7 +16,7 @@ export async function getAnimesBySearch(
 }
 
 export async function getDailyWord(client: SupabaseClient) {
-   const currentDate = new Date(); // Get the current date
+   const currentDate = new Date();
    const options: Intl.DateTimeFormatOptions = {
       year: 'numeric',
       month: '2-digit',

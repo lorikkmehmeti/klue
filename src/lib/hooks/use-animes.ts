@@ -12,12 +12,12 @@ export function useAnimes(searchQuery: string) {
    const client = useSupabase();
    const key = ['animes', searchQuery];
 
+   const length = searchQuery.length > 0 ? 10 : 5;
+
    return useQuery(key, async () => {
-      return getAnimesBySearch(
-         client,
-         searchQuery,
-         searchQuery.length > 0 ? 10 : 5
-      ).then((result) => result?.data);
+      return getAnimesBySearch(client, searchQuery, length).then(
+         (result) => result?.data
+      );
    });
 }
 
