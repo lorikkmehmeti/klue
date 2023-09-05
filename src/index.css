@@ -82,3 +82,7 @@ body {
 *:focus {
    outline: none;
 }
+
+.disabled-area * {
+   pointer-events: none;
+}
