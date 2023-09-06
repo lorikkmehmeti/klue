@@ -97,9 +97,11 @@ export function DailyPage() {
    return (
       <React.Fragment>
          {correctAnime && (
-            <h1 className="text-2xl text-center mb-3">
-               Anime is {correctAnime.anime_name_en}
-            </h1>
+            <div className="w-full text-xl bg-white shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0 px-4 py-3 text-center justify-center rounded-md flex items-center transition-colors mb-2">
+               <span className="ml-1 font-semibold">
+                  {correctAnime.anime_name_en}
+               </span>
+            </div>
          )}
 
          <div
