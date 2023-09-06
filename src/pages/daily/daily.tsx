@@ -35,15 +35,15 @@ export function DailyPage() {
       (anime as DailyRecord)?.anime_id
    );
 
-   const decreaseGuess = useDailyStore((state) => state.decreaseGuess);
-   const guesses = useDailyStore((state) => state.guesses);
+   const decrement = useDailyStore((state) => state.decrement);
+   const lives = useDailyStore((state) => state.lives);
 
    // get the anime list for the search
-   const { data: animes } = useAnimes(debouncedValue);
+   const { data: animes, isLoading: animesLoading } = useAnimes(debouncedValue);
 
    const { data: correctAnime } = useAnime(
       (anime as DailyRecord)?.anime_id,
-      guesses === 0 && !!anime
+      lives === 0 && !!anime
    );
 
    const { addBreadcrumb, clearBreadcrumbs } = useBreadcrumb();
@@ -66,7 +66,7 @@ export function DailyPage() {
          window.alert('e sakte');
       } else {
          window.alert('e pasakte');
-         decreaseGuess();
+         decrement();
          setInputValue('');
          setSelected(null);
       }
@@ -106,7 +106,7 @@ export function DailyPage() {
 
          <div
             className={`${
-               guesses === 0 ? 'opacity-40 select-none disabled-area' : ''
+               lives === 0 ? 'opacity-40 select-none disabled-area' : ''
             }`}
          >
             <div
@@ -134,7 +134,11 @@ export function DailyPage() {
                         {isOpen ? (
                            <div className="absolute top-0 z-20 w-full border bg-white rounded-bl-xl rounded-br-xl outline-none animate-in fade-in-0 zoom-in-95">
                               <CommandList>
-                                 {animes && animes?.length > 0 ? (
+                                 {/* TODO add a spinner */}
+                                 {animesLoading && <div>Loading spinner</div>}
+                                 {!animesLoading &&
+                                 animes &&
+                                 animes.length > 0 ? (
                                     <CommandGroup
                                        style={{
                                           maxHeight: '300px',
