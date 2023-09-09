@@ -22,10 +22,10 @@ export const useDailyStore = create<IDailyStore>()(
             },
         }),
         {
-            name: 'guesses-storage',
+            name: 'lives-storage',
             storage: createJSONStorage(() => localStorage) ,
             partialize: (state) => ({
-                guesses: state.lives > 5 ? 5 : state.lives,
+                lives: state.lives > 5 ? 5 : state.lives,
                 lastResetDate: state.lastResetTime,
             }),
         }

@@ -12,7 +12,7 @@ import { useDailyStore } from '@/lib/store/useDailyStore.ts';
 export function Header() {
    const { breadcrumbs } = useBreadcrumb();
 
-   const guesses = useDailyStore((state) => state.guesses);
+   const lives = useDailyStore((state) => state.lives);
 
    return (
       <div className="sticky top-0 z-50 flex h-16 w-full shrink-0 items-center justify-between border-b bg-gradient-to-b from-background/10 via-background/50 to-background/80 px-4 backdrop-blur-xl">
@@ -84,7 +84,7 @@ export function Header() {
             </div>
             <div className="flex items-center justify-between flex-none ml-auto gap-3">
                <span className="flex items-center gap-2">
-                  {Array.from(Array(guesses).keys()).map((_, index) => {
+                  {Array.from(Array(lives).keys()).map((_, index) => {
                      return (
                         <TooltipProvider key={index}>
                            <Tooltip>
@@ -105,15 +105,13 @@ export function Header() {
                                  </svg>
                               </TooltipTrigger>
                               <TooltipContent>
-                                 {guesses.toString()}{' '}
-                                 {guesses === 1 ? `live` : 'lives'} remaining
+                                 {lives.toString()}{' '}
+                                 {lives === 1 ? `live` : 'lives'} remaining
                               </TooltipContent>
                            </Tooltip>
                         </TooltipProvider>
                      );
                   })}
-
-                  {/*{guesses}*/}
                </span>
                {['Sign up', 'Login'].map((button: string, index) => {
                   return (
