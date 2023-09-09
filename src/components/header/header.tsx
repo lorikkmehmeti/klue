@@ -1,6 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useBreadcrumb } from '@/lib/providers/BreadcrumbProvider.tsx';
+import {
+   Tooltip,
+   TooltipContent,
+   TooltipProvider,
+   TooltipTrigger,
+} from '@/components/ui/tooltip.tsx';
 
 export function Header() {
    const { breadcrumbs } = useBreadcrumb();
@@ -73,14 +79,32 @@ export function Header() {
                   })}
                </div>
             </div>
-            <div className="flex items-center justify-between flex-none ml-auto">
+            <div className="flex items-center justify-between flex-none ml-auto gap-3">
+               {['Sign up', 'Login'].map((button: string, index) => {
+                  return (
+                     <TooltipProvider key={button}>
+                        <Tooltip>
+                           <TooltipTrigger asChild>
+                              <button
+                                 disabled
+                                 className={`${
+                                    index === 0 ? 'max-sm:hidden' : ''
+                                 } focus:outline-none focus-visible:outline-0 disabled:cursor-not-allowed disabled:opacity-75 flex-shrink-0 font-medium rounded-md text-sm gap-x-1.5 px-3.5 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 text-gray-700 dark:text-gray-200 bg-gray-50 hover:bg-gray-100 disabled:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700/50 dark:disabled:bg-gray-800 focus-visible:ring-2 focus-visible:ring-primary-500 dark:focus-visible:ring-primary-400 inline-flex items-center`}
+                              >
+                                 {button}
+                              </button>
+                           </TooltipTrigger>
+                           <TooltipContent>
+                              <p>Not available right now</p>
+                           </TooltipContent>
+                        </Tooltip>
+                     </TooltipProvider>
+                  );
+               })}
+
                <button
-                  className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 shadow-none hover:bg-accent hover:text-accent-foreground h-8 px-2 py-2"
+                  className="hidden inline-flex items-center justify-center text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 shadow-none hover:bg-accent hover:text-accent-foreground rounded-full"
                   type="button"
-                  id="radix-:rg:"
-                  aria-haspopup="menu"
-                  aria-expanded="false"
-                  data-state="closed"
                >
                   <img
                      alt="Avatar"

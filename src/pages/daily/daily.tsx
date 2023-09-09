@@ -1,190 +1,50 @@
-import React, {useCallback, useEffect, useState} from 'react';
-import {Anime, Keyword} from '@/lib/models';
-import {Skeleton} from '@/components/ui/skeleton.tsx';
-import {Command} from 'cmdk';
-import {CommandGroup, CommandItem, CommandList,} from '@/components/ui/command.tsx';
-import {cn} from '@/lib/utils.ts';
-import {CheckIcon} from '@radix-ui/react-icons';
-import {useDebounce} from '@/lib/hooks';
-import {useBreadcrumb} from '@/lib/providers/BreadcrumbProvider.tsx';
-import {useSupabase} from "@/lib/hooks/useSupabase.ts";
-
-// export const data = [
-//    {
-//       anime_name_jp: 'Jujutsu Kaisen',
-//       anime_name_en: 'Jujutsu Kaisen',
-//       anime_description:
-//          'In a world of curses and spirits, students wield their own powers to battle malevolent forces',
-//       release_date: '2020-10-03',
-//    },
-//    {
-//       anime_name_jp: 'Hagane no Renkinjutsushi',
-//       anime_name_en: 'Fullmetal Alchemist',
-//       anime_description:
-//          "Alchemical quests and brothers' journey to restore their bodies",
-//       release_date: '2009-04-05',
-//    },
-//    {
-//       anime_name_jp: 'Mob Psycho 100',
-//       anime_name_en: 'Mob Psycho 100',
-//       anime_description:
-//          'Psychic Mob navigates adolescence with unique powers and life lessons',
-//       release_date: '2016-07-11',
-//    },
-//    {
-//       anime_name_jp: 'Grand Blue',
-//       anime_name_en: 'Grand Blue',
-//       anime_description:
-//          "Iori navigates college life filled with alcohol and diving hilarity at his uncle's shop",
-//       release_date: '2018-07-14',
-//    },
-//    {
-//       anime_name_jp: 'Bleach',
-//       anime_name_en: 'Bleach',
-//       anime_description:
-//          "Ichigo Kurosaki's life transforms when he becomes a Soul Reaper, defending humans from dark entities",
-//       release_date: '2004-10-05',
-//    },
-// ];
-
-// const animeKeywords: Keyword[] = [
-//    {
-//       "id": "26a7a1d1-7f6f-4507-8696-23a4d6bb8109",
-//       "keyword": "Giants",
-//       "anime_id": "8dc125eb-e46f-40f1-8755-ed6c23786d3e",
-//       "updated_at": "2023-08-19T17:45:04.013722+00:00",
-//       "created_at": "2023-08-19T17:45:04.013722+00:00"
-//    },
-//    {
-//       "id": "8b5d72ef-a5ed-4416-a136-dd3f83c45dde",
-//       "keyword": "Walls",
-//       "anime_id": "8dc125eb-e46f-40f1-8755-ed6c23786d3e",
-//       "updated_at": "2023-08-19T17:45:04.013722+00:00",
-//       "created_at": "2023-08-19T17:45:04.013722+00:00"
-//    },
-//    {
-//       "id": "4b11c3c3-45cd-4368-9674-0884bac652cc",
-//       "keyword": "Military",
-//       "anime_id": "8dc125eb-e46f-40f1-8755-ed6c23786d3e",
-//       "updated_at": "2023-08-19T17:45:04.013722+00:00",
-//       "created_at": "2023-08-19T17:45:04.013722+00:00"
-//    },
-//    {
-//       "id": "a330a22a-d96f-4af8-a7cc-c160828652aa",
-//       "keyword": "Survival",
-//       "anime_id": "8dc125eb-e46f-40f1-8755-ed6c23786d3e",
-//       "updated_at": "2023-08-19T17:45:04.013722+00:00",
-//       "created_at": "2023-08-19T17:45:04.013722+00:00"
-//    },
-//    {
-//       "id": "8e676d58-6f4a-439a-b4ea-b9b1f626eccb",
-//       "keyword": "Trauma",
-//       "anime_id": "8dc125eb-e46f-40f1-8755-ed6c23786d3e",
-//       "updated_at": "2023-08-19T17:45:04.013722+00:00",
-//       "created_at": "2023-08-19T17:45:04.013722+00:00"
-//    },
-//    {
-//       "id": "b30cd7e9-3fe9-4b6f-9c20-66328b3d402e",
-//       "keyword": "Mystery",
-//       "anime_id": "8dc125eb-e46f-40f1-8755-ed6c23786d3e",
-//       "updated_at": "2023-08-19T17:45:04.013722+00:00",
-//       "created_at": "2023-08-19T17:45:04.013722+00:00"
-//    },
-//    {
-//       "id": "462c0c2f-5f18-43d6-9ae8-ab6bcf23b52a",
-//       "keyword": "Origin",
-//       "anime_id": "8dc125eb-e46f-40f1-8755-ed6c23786d3e",
-//       "updated_at": "2023-08-19T17:45:04.013722+00:00",
-//       "created_at": "2023-08-19T17:45:04.013722+00:00"
-//    },
-//    {
-//       "id": "9ee760cd-f350-45fa-bf83-baf4d83a4553",
-//       "keyword": "Revenge",
-//       "anime_id": "8dc125eb-e46f-40f1-8755-ed6c23786d3e",
-//       "updated_at": "2023-08-19T17:45:04.013722+00:00",
-//       "created_at": "2023-08-19T17:45:04.013722+00:00"
-//    },
-//    {
-//       "id": "a6799367-08e6-4059-8c5d-16b9e9ab26a3",
-//       "keyword": "Hope",
-//       "anime_id": "8dc125eb-e46f-40f1-8755-ed6c23786d3e",
-//       "updated_at": "2023-08-19T17:45:04.013722+00:00",
-//       "created_at": "2023-08-19T17:45:04.013722+00:00"
-//    },
-//    {
-//       "id": "7faac361-a980-4a24-8f5d-339c45f3c45e",
-//       "keyword": "Courage",
-//       "anime_id": "8dc125eb-e46f-40f1-8755-ed6c23786d3e",
-//       "updated_at": "2023-08-19T17:45:04.013722+00:00",
-//       "created_at": "2023-08-19T17:45:04.013722+00:00"
-//    }
-// ];
+import React, { ElementRef, useCallback, useEffect, useState } from 'react';
+import { Anime, AnimeOption, Keyword } from '@/lib/models';
+import { Skeleton } from '@/components/ui/skeleton.tsx';
+import { Command } from 'cmdk';
+import {
+   CommandGroup,
+   CommandItem,
+   CommandList,
+} from '@/components/ui/command.tsx';
+import { cn } from '@/lib/utils.ts';
+import { CheckIcon } from '@radix-ui/react-icons';
+import { useAnimes, useDebounce, useKeywords, useSupabase } from '@/lib/hooks';
+import { useBreadcrumb } from '@/lib/providers/BreadcrumbProvider.tsx';
+import { useDailyAnime } from '@/lib/hooks/use-animes.ts';
+import { DailyRecord } from '@/lib/models/daily.ts';
+import { getAnimeByColumn } from '@/lib/api/animes-api.ts';
 
 export function DailyPage() {
-   const { supabase } = useSupabase();
-   const [keywords, setAnimeKeywords] = useState<Keyword[]>([]);
-   const [loading, setIsLoading] = useState<boolean>(false);
-   const [, setLoadingAnimes] = useState<boolean>(false);
-   const inputRef = React.useRef<HTMLInputElement | null>(null);
+   const inputRef = React.useRef<ElementRef<'input'> | null>(null);
 
-   const [isOpen, setIsOpen] = useState<boolean>(false);
-   const [selected, setSelected] = useState<Anime | null>();
-
-   const [animes, setAnimes] = useState<Anime[]>([]);
+   const client = useSupabase();
 
    const [inputValue, setInputValue] = useState<string>('');
    const debouncedValue = useDebounce(inputValue, 1000);
 
+   const [isOpen, setIsOpen] = useState<boolean>(false);
+   const [selected, setSelected] = useState<AnimeOption | null>();
+
+   // const { data: answer } = useCheckAnswer({
+   //    column: 'anime_name_jp',
+   //    value: selected?.anime_name_jp,
+   // });
+
+   // console.log('ANSWER: ', { answer });
+
+   // get the daily anime
+   const { data: anime } = useDailyAnime();
+
+   // get the keywords for the daily anime
+   const { data: keywords, isLoading: loading } = useKeywords(
+      (anime as DailyRecord)?.anime_id
+   );
+
+   // get the anime list for the search
+   const { data: animes } = useAnimes(debouncedValue);
+
    const { addBreadcrumb, clearBreadcrumbs } = useBreadcrumb();
-
-   async function getKeywords() {
-      setIsLoading(true);
-      const randomAnimeQuery = await supabase
-         .from('anime')
-         .select('id')
-         .eq('id', '8dc125eb-e46f-40f1-8755-ed6c23786d3e');
-
-      if (randomAnimeQuery.error) {
-         console.error(
-            'Error fetching random anime ID:',
-            randomAnimeQuery.error.message
-         );
-         return;
-      }
-
-      const randomAnimeId: string = randomAnimeQuery.data[0]?.id;
-
-      if (randomAnimeId) {
-         const { data, error } = await supabase
-            .from('keywords')
-            .select('*')
-            .eq('anime_id', randomAnimeId);
-
-         if (error) {
-            return;
-         }
-
-         setAnimeKeywords(
-            data.map((item: Keyword, index) => {
-               return {
-                  ...item,
-                  revealed: index === 0,
-               };
-            })
-         );
-      }
-   }
-
-   useEffect(() => {
-      // if (!debouncedValue) return
-      void getKeywords()
-         .then(() => {
-            setIsLoading(false);
-         })
-         .catch(() => {
-            setIsLoading(false);
-         });
-   }, []);
 
    useEffect(() => {
       addBreadcrumb({ label: 'Daily Challenge', link: '/daily' });
@@ -194,60 +54,51 @@ export function DailyPage() {
       };
    }, [addBreadcrumb]);
 
-   useEffect(() => {
-      void getAnimes()
-         .then(() => {
-            setLoadingAnimes(false);
-         })
-         .catch(() => {
-            setLoadingAnimes(false);
-         });
-   }, [debouncedValue]);
+   async function CheckAnswer(selected: AnimeOption) {
+      const answer = await getAnimeByColumn(client, {
+         column: 'anime_name_jp',
+         value: selected?.anime_name_jp,
+      }).then((result) => result?.data as Anime);
 
-   async function getAnimes() {
-      setLoadingAnimes(true);
-      const { data, error } = await supabase
-         .from('anime')
-         .select(
-            'anime_name_jp, anime_name_en, anime_description, release_date'
-         )
-         .or(
-            `anime_name_jp.ilike.%${debouncedValue}%,anime_name_en.ilike.%${debouncedValue}%`
-         )
-         .limit(debouncedValue.length > 0 ? 10 : 5);
-
-      if (error) {
-         console.error('Error fetching random anime ID:', error.message);
-         return;
+      if (answer.id === (anime as DailyRecord).anime_id) {
+         window.alert('e sakte');
+      } else {
+         window.alert('e pasakte');
+         setInputValue('');
+         setSelected(null);
       }
-
-
-      setAnimes(data as Anime[]);
    }
 
-   const handleSelectOption = useCallback((selectedOption: Anime) => {
-      // setInputValue(selectedOption.anime_name_en);
+   const handleSelectOption = (selectedOption: AnimeOption) => {
       setSelected(selectedOption);
       setInputValue(selectedOption.anime_name_jp);
-      // This is a hack to prevent the input from being focused after the user selects an option
-      // We can call this hack: "The next tick"
+
+      void CheckAnswer(selectedOption);
+
+      // if (answer !== undefined && anime !== undefined) {
+      //    console.log({ answer, anime });
+      //    if ((answer as Anime)?.id === anime?.anime_id) {
+      //       window.alert('e sakte');
+      //    }
+      // }
+
       setTimeout(() => {
          inputRef?.current?.blur();
       }, 0);
-   }, []);
+   };
 
    const handleBlur = useCallback(() => {
       setIsOpen(false);
-      // setAnimes([]);
-      // setInputValue(selected?.anime_name_en || "");
    }, [selected]);
 
    const handleKeywordClick = (index: number) => {
-      if (keywords[index].revealed) return;
-      const updatedKeywords: Keyword[] = [...keywords]; // Create a copy of the array
-      updatedKeywords[index].revealed = true; // Modify the desired property
+      console.log(index);
 
-      setAnimeKeywords(updatedKeywords); // Update the state with the modified copy
+      // if (keywords[index].revealed) return;
+      // const updatedKeywords: Keyword[] = [...keywords]; // Create a copy of the array
+      // updatedKeywords[index].revealed = true; // Modify the desired property
+
+      // setAnimeKeywords(updatedKeywords); // Update the state with the modified copy
    };
 
    return (
@@ -263,15 +114,19 @@ export function DailyPage() {
                         setInputValue(val);
                      }}
                      onFocus={() => setIsOpen(true)}
-                     placeholder='Search anime'
+                     placeholder="Search anime"
                      disabled={false}
-                     className={`w-full transition-all border border-border ${isOpen ? 'rounded-tl-xl rounded-tr-xl border-b-transparent' : 'rounded-xl'} py-1 xl:px-5 px-3 placeholder:text-tGray-600 text-[16px] lg:h-[54px] leading-7 flex-1 bg-tGray-100`}
+                     className={`w-full transition-all border border-border ${
+                        isOpen
+                           ? 'rounded-tl-xl rounded-tr-xl border-b-transparent'
+                           : 'rounded-xl'
+                     } py-1 xl:px-5 px-3 placeholder:text-tGray-600 text-[16px] lg:h-[54px] leading-7 flex-1 bg-tGray-100`}
                   />
                   <div className={`relative z-50`}>
                      {isOpen ? (
                         <div className="absolute top-0 z-20 w-full border bg-white rounded-bl-xl rounded-br-xl outline-none animate-in fade-in-0 zoom-in-95">
                            <CommandList>
-                              {animes.length > 0 ? (
+                              {animes && animes?.length > 0 ? (
                                  <CommandGroup
                                     style={{
                                        maxHeight: '300px',
@@ -279,34 +134,40 @@ export function DailyPage() {
                                     }}
                                     className="p-2"
                                  >
-                                    {animes.map((option: Anime, index) => {
-                                       const isSelected =
-                                          selected?.anime_name_jp ===
-                                          option.anime_name_jp;
-                                       return (
-                                          <CommandItem
-                                             key={option.anime_name_jp + index}
-                                             value={option.anime_name_jp}
-                                             onMouseDown={(event) => {
-                                                event.preventDefault();
-                                                event.stopPropagation();
-                                             }}
-                                             onSelect={() =>
-                                                handleSelectOption(option)
-                                             }
-                                             className={cn([
-                                                'flex items-center gap-2 w-full',
-                                                !isSelected ? 'pl-8' : null,
-                                             ])}
-                                          >
-                                             {isSelected ? <CheckIcon /> : null}
-                                             {option.anime_name_jp ===
-                                             option.anime_name_en
-                                                ? option.anime_name_jp
-                                                : `${option.anime_name_jp} / ${option.anime_name_en}`}
-                                          </CommandItem>
-                                       );
-                                    })}
+                                    {animes?.map(
+                                       (option: AnimeOption, index: number) => {
+                                          const isSelected =
+                                             selected?.anime_name_jp ===
+                                             option.anime_name_jp;
+                                          return (
+                                             <CommandItem
+                                                key={
+                                                   option.anime_name_jp + index
+                                                }
+                                                value={option.anime_name_jp}
+                                                onMouseDown={(event) => {
+                                                   event.preventDefault();
+                                                   event.stopPropagation();
+                                                }}
+                                                onSelect={() =>
+                                                   handleSelectOption(option)
+                                                }
+                                                className={cn([
+                                                   'flex items-center gap-2 w-full',
+                                                   !isSelected ? 'pl-8' : null,
+                                                ])}
+                                             >
+                                                {isSelected ? (
+                                                   <CheckIcon />
+                                                ) : null}
+                                                {option.anime_name_jp ===
+                                                option.anime_name_en
+                                                   ? option.anime_name_jp
+                                                   : `${option.anime_name_jp} / ${option.anime_name_en}`}
+                                             </CommandItem>
+                                          );
+                                       }
+                                    )}
                                  </CommandGroup>
                               ) : null}
                            </CommandList>
@@ -327,14 +188,13 @@ export function DailyPage() {
               })
             : null}
          <div className="pt-2">
-            {!loading && keywords.length
-               ? keywords.map(({ keyword, revealed }, index) => {
+            {!loading && keywords?.length
+               ? keywords.map(({ keyword, revealed }: Keyword, index) => {
                     return (
                        <button
                           key={index}
                           title={!revealed ? `Click to reveal` : ''}
                           onClick={() => handleKeywordClick(index)}
-                          style={{ filter: revealed ? '' : 'blur(5px)' }}
                           className="w-full text-sm bg-white shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0 px-2 py-1 rounded-md flex items-center transition-colors mb-2"
                        >
                           <span className="flex px-3 py-1">
