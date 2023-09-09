@@ -15,6 +15,7 @@ import { useAnime, useDailyAnime } from '@/lib/hooks/use-animes.ts';
 import { DailyRecord } from '@/lib/models/daily.ts';
 import { getAnimeByColumn } from '@/lib/api/animes-api.ts';
 import { useDailyStore } from '@/lib/store/useDailyStore.ts';
+import { ScrollArea } from '@/components/ui/scroll-area.tsx';
 
 export function DailyPage() {
    const inputRef = React.useRef<ElementRef<'input'> | null>(null);
@@ -39,7 +40,11 @@ export function DailyPage() {
    const lives = useDailyStore((state) => state.lives);
 
    // get the anime list for the search
-   const { data: animes, isLoading: animesLoading } = useAnimes(debouncedValue);
+   const {
+      data: animes,
+      isLoading: animesLoading,
+      isFetched,
+   } = useAnimes(debouncedValue);
 
    const { data: correctAnime } = useAnime(
       (anime as DailyRecord)?.anime_id,
@@ -134,59 +139,110 @@ export function DailyPage() {
                         {isOpen ? (
                            <div className="absolute top-0 z-20 w-full border bg-white rounded-bl-xl rounded-br-xl outline-none animate-in fade-in-0 zoom-in-95">
                               <CommandList>
+                                 {isFetched && animes?.length === 0 ? (
+                                    <div className="py-6 text-center text-sm">
+                                       No results found
+                                    </div>
+                                 ) : null}
                                  {/* TODO add a spinner */}
-                                 {animesLoading && <div>Loading spinner</div>}
+                                 {animesLoading && (
+                                    <div className="flex py-[3rem] text-stone-400 items-center justify-center">
+                                       <svg
+                                          xmlns="http://www.w3.org/2000/svg"
+                                          width="32"
+                                          height="32"
+                                          viewBox="0 0 24 24"
+                                       >
+                                          <g stroke="currentColor">
+                                             <circle
+                                                cx="12"
+                                                cy="12"
+                                                r="9.5"
+                                                fill="none"
+                                                strokeLinecap="round"
+                                                strokeWidth="3"
+                                             >
+                                                <animate
+                                                   attributeName="stroke-dasharray"
+                                                   calcMode="spline"
+                                                   dur="1.5s"
+                                                   keySplines="0.42,0,0.58,1;0.42,0,0.58,1;0.42,0,0.58,1"
+                                                   keyTimes="0;0.475;0.95;1"
+                                                   repeatCount="indefinite"
+                                                   values="0 150;42 150;42 150;42 150"
+                                                />
+                                                <animate
+                                                   attributeName="stroke-dashoffset"
+                                                   calcMode="spline"
+                                                   dur="1.5s"
+                                                   keySplines="0.42,0,0.58,1;0.42,0,0.58,1;0.42,0,0.58,1"
+                                                   keyTimes="0;0.475;0.95;1"
+                                                   repeatCount="indefinite"
+                                                   values="0;-16;-59;-59"
+                                                />
+                                             </circle>
+                                             <animateTransform
+                                                attributeName="transform"
+                                                dur="2s"
+                                                repeatCount="indefinite"
+                                                type="rotate"
+                                                values="0 12 12;360 12 12"
+                                             />
+                                          </g>
+                                       </svg>
+                                    </div>
+                                 )}
                                  {!animesLoading &&
                                  animes &&
                                  animes.length > 0 ? (
-                                    <CommandGroup
-                                       style={{
-                                          maxHeight: '300px',
-                                          overflowY: 'auto',
-                                       }}
-                                       className="p-2"
-                                    >
-                                       {animes?.map(
-                                          (
-                                             option: AnimeOption,
-                                             index: number
-                                          ) => {
-                                             const isSelected =
-                                                selected?.anime_name_jp ===
-                                                option.anime_name_jp;
-                                             return (
-                                                <CommandItem
-                                                   key={
-                                                      option.anime_name_jp +
-                                                      index
-                                                   }
-                                                   value={option.anime_name_jp}
-                                                   onMouseDown={(event) => {
-                                                      event.preventDefault();
-                                                      event.stopPropagation();
-                                                   }}
-                                                   onSelect={() =>
-                                                      handleSelectOption(option)
-                                                   }
-                                                   className={cn([
-                                                      'flex items-center gap-2 w-full',
-                                                      !isSelected
-                                                         ? 'pl-8'
-                                                         : null,
-                                                   ])}
-                                                >
-                                                   {isSelected ? (
-                                                      <CheckIcon />
-                                                   ) : null}
-                                                   {option.anime_name_jp ===
-                                                   option.anime_name_en
-                                                      ? option.anime_name_jp
-                                                      : `${option.anime_name_jp} / ${option.anime_name_en}`}
-                                                </CommandItem>
-                                             );
-                                          }
-                                       )}
-                                    </CommandGroup>
+                                    <ScrollArea className="h-[216px]">
+                                       <CommandGroup className="p-2">
+                                          {animes?.map(
+                                             (
+                                                option: AnimeOption,
+                                                index: number
+                                             ) => {
+                                                const isSelected =
+                                                   selected?.anime_name_jp ===
+                                                   option.anime_name_jp;
+                                                return (
+                                                   <CommandItem
+                                                      key={
+                                                         option.anime_name_jp +
+                                                         index
+                                                      }
+                                                      value={
+                                                         option.anime_name_jp
+                                                      }
+                                                      onMouseDown={(event) => {
+                                                         event.preventDefault();
+                                                         event.stopPropagation();
+                                                      }}
+                                                      onSelect={() =>
+                                                         handleSelectOption(
+                                                            option
+                                                         )
+                                                      }
+                                                      className={cn([
+                                                         'flex items-center gap-2 w-full',
+                                                         !isSelected
+                                                            ? 'pl-8'
+                                                            : null,
+                                                      ])}
+                                                   >
+                                                      {isSelected ? (
+                                                         <CheckIcon />
+                                                      ) : null}
+                                                      {option.anime_name_jp ===
+                                                      option.anime_name_en
+                                                         ? option.anime_name_jp
+                                                         : `${option.anime_name_jp} (${option.anime_name_en})`}
+                                                   </CommandItem>
+                                                );
+                                             }
+                                          )}
+                                       </CommandGroup>
+                                    </ScrollArea>
                                  ) : null}
                               </CommandList>
                            </div>
