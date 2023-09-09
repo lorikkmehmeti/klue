@@ -6,6 +6,9 @@ import { routerRoutes as router } from './Routes';
 import { BreadcrumbProvider } from '@/lib/providers/BreadcrumbProvider.tsx';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { SupabaseProvider } from '@/lib/providers';
+import { initializeDailyStore } from '@/lib/store/useDailyStore.ts';
+
+initializeDailyStore();
 
 const queryClient = new QueryClient({
    defaultOptions: {

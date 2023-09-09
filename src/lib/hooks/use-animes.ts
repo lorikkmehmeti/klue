@@ -30,6 +30,19 @@ export function useDailyAnime() {
    });
 }
 
+export function useAnime(id: string, condition = true) {
+   const client = useSupabase();
+   const key = ['single-anime', 'get-single-anime'];
+
+   return useQuery({
+     queryKey: key,
+     queryFn: async () => {
+        return getAnimeByColumn(client, { column: 'id', value: id }).then((result) => result.data as Anime)
+     },
+     enabled: condition
+   });
+}
+
 export function useCheckAnswer({
    column,
    value,
