@@ -79,10 +79,18 @@
 body {
    overflow-y: scroll;
 }
+body, html, #root {
+   height: 100%;
+   @apply font-inter;
+}
 *:focus {
    outline: none;
 }
 
 .disabled-area * {
    pointer-events: none;
+}
+
+[data-sonner-toast] [data-content]  {
+   @apply font-inter;
 }

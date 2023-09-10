@@ -83,46 +83,35 @@ export function Header() {
                </div>
             </div>
             <div className="flex items-center justify-between flex-none ml-auto gap-3">
-               <span className="flex items-center gap-2">
-                  {Array.from(Array(lives).keys()).map((_, index) => {
-                     return (
-                        <TooltipProvider key={index}>
-                           <Tooltip>
-                              <TooltipTrigger>
-                                 <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="1.25em"
-                                    height="1.25em"
-                                    viewBox="0 0 256 256"
-                                 >
-                                    <g fill="currentColor">
-                                       <path
-                                          d="M232 94c0 66-104 122-104 122S24 160 24 94a54 54 0 0 1 54-54c22.59 0 41.94 12.31 50 32c8.06-19.69 27.41-32 50-32a54 54 0 0 1 54 54Z"
-                                          opacity=".2"
-                                       ></path>
-                                       <path d="M178 32c-20.65 0-38.73 8.88-50 23.89C116.73 40.88 98.65 32 78 32a62.07 62.07 0 0 0-62 62c0 70 103.79 126.66 108.21 129a8 8 0 0 0 7.58 0C136.21 220.66 240 164 240 94a62.07 62.07 0 0 0-62-62Zm-50 174.8C109.74 196.16 32 147.69 32 94a46.06 46.06 0 0 1 46-46c19.45 0 35.78 10.36 42.6 27a8 8 0 0 0 14.8 0c6.82-16.67 23.15-27 42.6-27a46.06 46.06 0 0 1 46 46c0 53.61-77.76 102.15-96 112.8Z"></path>
-                                    </g>
-                                 </svg>
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                 {lives.toString()}{' '}
-                                 {lives === 1 ? `live` : 'lives'} remaining
-                              </TooltipContent>
-                           </Tooltip>
-                        </TooltipProvider>
-                     );
-                  })}
-               </span>
-               {['Sign up', 'Login'].map((button: string, index) => {
+               <button className="bg-zinc-100 shadow-sm ring-1 ring-gray-200 border-transparent inline-flex relative items-center justify-center align-middle whitespace-nowrap overflow-hidden font-semibold rounded text-xs h-[28px]">
+                  <span className="flex flex-grow justify-center px-2 gap-2">
+                     <span>
+                        <svg
+                           xmlns="http://www.w3.org/2000/svg"
+                           width="16px"
+                           height="16px"
+                           viewBox="0 0 24 24"
+                        >
+                           <path
+                              fill="currentColor"
+                              d="m8.962 18.91l.464-.588l-.464.589ZM12 5.5l-.54.52a.75.75 0 0 0 1.08 0L12 5.5Zm3.038 13.41l.465.59l-.465-.59Zm-5.612-.588C7.91 17.127 6.253 15.96 4.938 14.48C3.65 13.028 2.75 11.334 2.75 9.137h-1.5c0 2.666 1.11 4.7 2.567 6.339c1.43 1.61 3.254 2.9 4.68 4.024l.93-1.178ZM2.75 9.137c0-2.15 1.215-3.954 2.874-4.713c1.612-.737 3.778-.541 5.836 1.597l1.08-1.04C10.1 2.444 7.264 2.025 5 3.06C2.786 4.073 1.25 6.425 1.25 9.137h1.5ZM8.497 19.5c.513.404 1.063.834 1.62 1.16c.557.325 1.193.59 1.883.59v-1.5c-.31 0-.674-.12-1.126-.385c-.453-.264-.922-.628-1.448-1.043L8.497 19.5Zm7.006 0c1.426-1.125 3.25-2.413 4.68-4.024c1.457-1.64 2.567-3.673 2.567-6.339h-1.5c0 2.197-.9 3.891-2.188 5.343c-1.315 1.48-2.972 2.647-4.488 3.842l.929 1.178ZM22.75 9.137c0-2.712-1.535-5.064-3.75-6.077c-2.264-1.035-5.098-.616-7.54 1.92l1.08 1.04c2.058-2.137 4.224-2.333 5.836-1.596c1.659.759 2.874 2.562 2.874 4.713h1.5Zm-8.176 9.185c-.526.415-.995.779-1.448 1.043c-.452.264-.816.385-1.126.385v1.5c.69 0 1.326-.265 1.883-.59c.558-.326 1.107-.756 1.62-1.16l-.929-1.178Z"
+                           ></path>
+                        </svg>
+                     </span>
+                     <span className="flex items-center text-xs">Lives</span>
+                  </span>
+                  <span className="bg-zinc-200 px-3 flex items-center self-stretch">
+                     {lives}
+                  </span>
+               </button>
+               {['Sign up', 'Login'].map((button: string) => {
                   return (
                      <TooltipProvider key={button}>
                         <Tooltip>
                            <TooltipTrigger asChild>
                               <button
                                  disabled
-                                 className={`${
-                                    index === 0 ? 'max-sm:hidden' : ''
-                                 } focus:outline-none focus-visible:outline-0 disabled:cursor-not-allowed disabled:opacity-75 flex-shrink-0 font-medium rounded-md text-sm gap-x-1.5 px-3.5 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 text-gray-700 dark:text-gray-200 bg-gray-50 hover:bg-gray-100 disabled:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700/50 dark:disabled:bg-gray-800 focus-visible:ring-2 focus-visible:ring-primary-500 dark:focus-visible:ring-primary-400 inline-flex items-center`}
+                                 className={`max-sm:hidden focus:outline-none focus-visible:outline-0 disabled:cursor-not-allowed disabled:opacity-75 flex-shrink-0 font-medium rounded-md text-sm gap-x-1.5 px-3.5 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 text-gray-700 dark:text-gray-200 bg-gray-50 hover:bg-gray-100 disabled:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700/50 dark:disabled:bg-gray-800 focus-visible:ring-2 focus-visible:ring-primary-500 dark:focus-visible:ring-primary-400 inline-flex items-center`}
                               >
                                  {button}
                               </button>

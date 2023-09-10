@@ -16,8 +16,16 @@ import { DailyRecord } from '@/lib/models/daily.ts';
 import { getAnimeByColumn } from '@/lib/api/animes-api.ts';
 import { useDailyStore } from '@/lib/store/useDailyStore.ts';
 import { ScrollArea } from '@/components/ui/scroll-area.tsx';
+import { toast } from 'sonner';
+import { message } from '@/lib/constants/messages.ts';
 
 export function DailyPage() {
+   const decrement = useDailyStore((state) => state.decrement);
+   const canPlay = useDailyStore((state) => state.canPlay);
+   const reset = useDailyStore((state) => state.reset);
+   const lives = useDailyStore((state) => state.lives);
+   const foundRightAnswer = useDailyStore((state) => state.foundRightAnswer);
+
    const inputRef = React.useRef<ElementRef<'input'> | null>(null);
 
    const client = useSupabase();
@@ -28,27 +36,26 @@ export function DailyPage() {
    const [isOpen, setIsOpen] = useState<boolean>(false);
    const [selected, setSelected] = useState<AnimeOption | null>();
 
-   // get the daily anime
+   // [explain] get the daily anime
    const { data: anime } = useDailyAnime();
 
-   // get the keywords for the daily anime
+   // [explain] get the keywords for the daily anime
    const { data: keywords, isLoading: loading } = useKeywords(
       (anime as DailyRecord)?.anime_id
    );
 
-   const decrement = useDailyStore((state) => state.decrement);
-   const lives = useDailyStore((state) => state.lives);
-
-   // get the anime list for the search
+   // [explain] get the anime list for the search
    const {
       data: animes,
       isLoading: animesLoading,
       isFetched,
    } = useAnimes(debouncedValue);
 
+   // [explain]: Activate the correct anime selection
+   // [explain]: This action is triggered when the user can no longer play, indicating they have either found the correct answer or lost the game.
    const { data: correctAnime } = useAnime(
       (anime as DailyRecord)?.anime_id,
-      lives === 0 && !!anime
+      !canPlay && !!anime
    );
 
    const { addBreadcrumb, clearBreadcrumbs } = useBreadcrumb();
@@ -62,33 +69,41 @@ export function DailyPage() {
    }, [addBreadcrumb]);
 
    async function CheckAnswer(selected: AnimeOption) {
+      if (!canPlay) return;
+      // [explain] from the selected answer, we search on database based on the field `anime_name_jp`
       const answer = await getAnimeByColumn(client, {
          column: 'anime_name_jp',
          value: selected?.anime_name_jp,
       }).then((result) => result?.data as Anime);
 
-      if (answer.id === (anime as DailyRecord).anime_id) {
-         window.alert('e sakte');
-      } else {
-         window.alert('e pasakte');
-         decrement();
-         setInputValue('');
-         setSelected(null);
+      const isCorrect = answer.id === (anime as DailyRecord).anime_id; // [explain] check if the user is correct with the answer
+      const answer_message = message(isCorrect); // [explain] get the correct/wrong messages to show the user
+
+      // [explain] setInputValue to empty string
+      setInputValue('');
+      if (isCorrect) {
+         toast(answer_message?.title, {
+            description: answer_message?.description,
+         });
+         reset();
+         foundRightAnswer();
+         return;
       }
+
+      // [explain]: if the user is correct, show the toast, fire decrement method and remove the selected answer
+      toast(answer_message?.title, {
+         description: lives !== 1 ? answer_message?.description : null,
+      });
+      decrement();
+      setSelected(null);
    }
 
    const handleSelectOption = (selectedOption: AnimeOption) => {
+      if (!canPlay) return;
       setSelected(selectedOption);
       setInputValue(selectedOption.anime_name_jp);
 
       void CheckAnswer(selectedOption);
-
-      // if (answer !== undefined && anime !== undefined) {
-      //    console.log({ answer, anime });
-      //    if ((answer as Anime)?.id === anime?.anime_id) {
-      //       window.alert('e sakte');
-      //    }
-      // }
 
       setTimeout(() => {
          inputRef?.current?.blur();
@@ -111,7 +126,7 @@ export function DailyPage() {
 
          <div
             className={`${
-               lives === 0 ? 'opacity-40 select-none disabled-area' : ''
+               !canPlay ? 'opacity-40 select-none disabled-area' : ''
             }`}
          >
             <div
@@ -124,6 +139,7 @@ export function DailyPage() {
                         value={inputValue}
                         onBlur={handleBlur}
                         onValueChange={(val) => {
+                           if (!canPlay) return;
                            setInputValue(val);
                         }}
                         onFocus={() => setIsOpen(true)}

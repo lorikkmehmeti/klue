@@ -7,6 +7,19 @@ import { BreadcrumbProvider } from '@/lib/providers/BreadcrumbProvider.tsx';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { SupabaseProvider } from '@/lib/providers';
 import { initializeDailyStore } from '@/lib/store/useDailyStore.ts';
+import { Toaster } from 'sonner';
+
+declare global {
+   interface Array<T> {
+      getRandomElement(): T | undefined;
+   }
+}
+
+Array.prototype.getRandomElement = function () {
+   const randomIndex = Math.floor(Math.random() * this.length);
+   // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+   return this[randomIndex];
+};
 
 initializeDailyStore();
 
@@ -24,6 +37,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
          <SupabaseProvider>
             <BreadcrumbProvider>
                <RouterProvider router={router} />
+               <Toaster position={window.innerWidth > 768 ? 'top-center' : "bottom-center"} duration={3000} />
             </BreadcrumbProvider>
          </SupabaseProvider>
       </QueryClientProvider>
