@@ -1,13 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useBreadcrumb } from '@/lib/providers/BreadcrumbProvider.tsx';
+import { useDailyStore } from '@/lib/store/useDailyStore.ts';
 import {
    Tooltip,
    TooltipContent,
    TooltipProvider,
    TooltipTrigger,
 } from '@/components/ui/tooltip.tsx';
-import { useDailyStore } from '@/lib/store/useDailyStore.ts';
 
 export function Header() {
    const { breadcrumbs } = useBreadcrumb();
@@ -15,24 +15,12 @@ export function Header() {
    const lives = useDailyStore((state) => state.lives);
 
    return (
-      <div className="sticky top-0 z-50 flex h-16 w-full shrink-0 items-center justify-between border-b bg-gradient-to-b from-background/10 via-background/50 to-background/80 px-4 backdrop-blur-xl">
-         <div className="flex items-center max-w-7xl w-full mx-auto">
-            <Link
-               to={'/'}
-               className="items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 shadow-none hover:bg-accent hover:text-accent-foreground -ml-2 h-9 w-9 p-0 flex"
-            >
-               <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="currentColor"
-                  className="h-6 w-6"
-                  viewBox="0 0 24 24"
-               >
-                  <path
-                     fill="currentColor"
-                     d="M1 19.025v-5h2v3h18v-3h2v5H1ZM9.55 15v-.85h-.075q-.325.5-.875.788t-1.25.287q-1.225 0-1.925-.637t-.7-1.738q0-1.05.813-1.712t2.087-.663q.575 0 1.063.088t.837.287v-.35q0-.675-.463-1.075t-1.262-.4q-.525 0-.987.225t-.788.65L4.95 9.1q.475-.675 1.2-1.025t1.675-.35q1.55 0 2.375.738t.825 2.137V15H9.55ZM7.9 11.65q-.8 0-1.225.313t-.425.887q0 .5.375.813t.975.312q.8 0 1.363-.562t.562-1.363q-.35-.2-.8-.3t-.825-.1ZM12.525 15V4.975h1.55V7.8L14 8.8h.075q.075-.125.6-.638t1.65-.512q1.6 0 2.525 1.15t.925 2.65q0 1.5-.912 2.638t-2.538 1.137q-1.025 0-1.563-.45t-.687-.7H14V15h-1.475ZM16.1 9.05q-1 0-1.55.738T14 11.425q0 .925.55 1.65t1.55.725q1 0 1.563-.725t.562-1.65q0-.925-.563-1.65T16.1 9.05Z"
-                  />
-               </svg>
-               <span className="sr-only">Toggle Sidebar</span>
+      <div className="sticky top-[.75rem] z-50 z-navigation flex w-full items-center justify-between rounded-lg border py-3 px-4 border-marble-400 bg-white border-marble-400">
+         <div className="flex items-center w-full mx-auto">
+            <Link to={'/'} className="">
+               <span className="font-jetbrains text-logo lowercase font-variable ml-1 font-light text-green-700">
+                  klue {lives}
+               </span>
             </Link>
             <div className="flex items-center">
                <svg
@@ -83,27 +71,27 @@ export function Header() {
                </div>
             </div>
             <div className="flex items-center justify-between flex-none ml-auto gap-3">
-               <button className="bg-zinc-100 shadow-sm ring-1 ring-gray-200 border-transparent inline-flex relative items-center justify-center align-middle whitespace-nowrap overflow-hidden font-semibold rounded text-xs h-[28px]">
-                  <span className="flex flex-grow justify-center px-2 gap-2">
-                     <span>
-                        <svg
-                           xmlns="http://www.w3.org/2000/svg"
-                           width="16px"
-                           height="16px"
-                           viewBox="0 0 24 24"
-                        >
-                           <path
-                              fill="currentColor"
-                              d="m8.962 18.91l.464-.588l-.464.589ZM12 5.5l-.54.52a.75.75 0 0 0 1.08 0L12 5.5Zm3.038 13.41l.465.59l-.465-.59Zm-5.612-.588C7.91 17.127 6.253 15.96 4.938 14.48C3.65 13.028 2.75 11.334 2.75 9.137h-1.5c0 2.666 1.11 4.7 2.567 6.339c1.43 1.61 3.254 2.9 4.68 4.024l.93-1.178ZM2.75 9.137c0-2.15 1.215-3.954 2.874-4.713c1.612-.737 3.778-.541 5.836 1.597l1.08-1.04C10.1 2.444 7.264 2.025 5 3.06C2.786 4.073 1.25 6.425 1.25 9.137h1.5ZM8.497 19.5c.513.404 1.063.834 1.62 1.16c.557.325 1.193.59 1.883.59v-1.5c-.31 0-.674-.12-1.126-.385c-.453-.264-.922-.628-1.448-1.043L8.497 19.5Zm7.006 0c1.426-1.125 3.25-2.413 4.68-4.024c1.457-1.64 2.567-3.673 2.567-6.339h-1.5c0 2.197-.9 3.891-2.188 5.343c-1.315 1.48-2.972 2.647-4.488 3.842l.929 1.178ZM22.75 9.137c0-2.712-1.535-5.064-3.75-6.077c-2.264-1.035-5.098-.616-7.54 1.92l1.08 1.04c2.058-2.137 4.224-2.333 5.836-1.596c1.659.759 2.874 2.562 2.874 4.713h1.5Zm-8.176 9.185c-.526.415-.995.779-1.448 1.043c-.452.264-.816.385-1.126.385v1.5c.69 0 1.326-.265 1.883-.59c.558-.326 1.107-.756 1.62-1.16l-.929-1.178Z"
-                           ></path>
-                        </svg>
-                     </span>
-                     <span className="flex items-center text-xs">Lives</span>
-                  </span>
-                  <span className="bg-zinc-200 px-3 flex items-center self-stretch">
-                     {lives}
-                  </span>
-               </button>
+               {/*<button className="bg-zinc-100 shadow-sm ring-1 ring-gray-200 border-transparent inline-flex relative items-center justify-center align-middle whitespace-nowrap overflow-hidden font-semibold rounded text-xs h-[28px]">*/}
+               {/*   <span className="flex flex-grow justify-center px-2 gap-2">*/}
+               {/*      <span>*/}
+               {/*         <svg*/}
+               {/*            xmlns="http://www.w3.org/2000/svg"*/}
+               {/*            width="16px"*/}
+               {/*            height="16px"*/}
+               {/*            viewBox="0 0 24 24"*/}
+               {/*         >*/}
+               {/*            <path*/}
+               {/*               fill="currentColor"*/}
+               {/*               d="m8.962 18.91l.464-.588l-.464.589ZM12 5.5l-.54.52a.75.75 0 0 0 1.08 0L12 5.5Zm3.038 13.41l.465.59l-.465-.59Zm-5.612-.588C7.91 17.127 6.253 15.96 4.938 14.48C3.65 13.028 2.75 11.334 2.75 9.137h-1.5c0 2.666 1.11 4.7 2.567 6.339c1.43 1.61 3.254 2.9 4.68 4.024l.93-1.178ZM2.75 9.137c0-2.15 1.215-3.954 2.874-4.713c1.612-.737 3.778-.541 5.836 1.597l1.08-1.04C10.1 2.444 7.264 2.025 5 3.06C2.786 4.073 1.25 6.425 1.25 9.137h1.5ZM8.497 19.5c.513.404 1.063.834 1.62 1.16c.557.325 1.193.59 1.883.59v-1.5c-.31 0-.674-.12-1.126-.385c-.453-.264-.922-.628-1.448-1.043L8.497 19.5Zm7.006 0c1.426-1.125 3.25-2.413 4.68-4.024c1.457-1.64 2.567-3.673 2.567-6.339h-1.5c0 2.197-.9 3.891-2.188 5.343c-1.315 1.48-2.972 2.647-4.488 3.842l.929 1.178ZM22.75 9.137c0-2.712-1.535-5.064-3.75-6.077c-2.264-1.035-5.098-.616-7.54 1.92l1.08 1.04c2.058-2.137 4.224-2.333 5.836-1.596c1.659.759 2.874 2.562 2.874 4.713h1.5Zm-8.176 9.185c-.526.415-.995.779-1.448 1.043c-.452.264-.816.385-1.126.385v1.5c.69 0 1.326-.265 1.883-.59c.558-.326 1.107-.756 1.62-1.16l-.929-1.178Z"*/}
+               {/*            ></path>*/}
+               {/*         </svg>*/}
+               {/*      </span>*/}
+               {/*      <span className="flex items-center text-xs">Lives</span>*/}
+               {/*   </span>*/}
+               {/*   <span className="bg-zinc-200 px-3 flex items-center self-stretch">*/}
+               {/*      {lives}*/}
+               {/*   </span>*/}
+               {/*</button>*/}
                {['Sign up', 'Login'].map((button: string) => {
                   return (
                      <TooltipProvider key={button}>
@@ -125,7 +113,7 @@ export function Header() {
                })}
 
                <button
-                  className="hidden items-center justify-center text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 shadow-none hover:bg-accent hover:text-accent-foreground rounded-full"
+                  className="flex items-center justify-center text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 shadow-none hover:bg-accent hover:text-accent-foreground rounded-full"
                   type="button"
                >
                   <img

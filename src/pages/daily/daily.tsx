@@ -8,14 +8,12 @@ import {
    CommandList,
 } from '@/components/ui/command.tsx';
 import { cn } from '@/lib/utils.ts';
-import { CheckIcon } from '@radix-ui/react-icons';
 import { useAnimes, useDebounce, useKeywords, useSupabase } from '@/lib/hooks';
 import { useBreadcrumb } from '@/lib/providers/BreadcrumbProvider.tsx';
 import { useAnime, useDailyAnime } from '@/lib/hooks/use-animes.ts';
 import { DailyRecord } from '@/lib/models/daily.ts';
 import { getAnimeByColumn } from '@/lib/api/animes-api.ts';
 import { useDailyStore } from '@/lib/store/useDailyStore.ts';
-import { ScrollArea } from '@/components/ui/scroll-area.tsx';
 import { toast } from 'sonner';
 import { message } from '@/lib/constants/messages.ts';
 
@@ -70,16 +68,31 @@ export function DailyPage() {
 
    async function CheckAnswer(selected: AnimeOption) {
       if (!canPlay) return;
-      // [explain] from the selected answer, we search on database based on the field `anime_name_jp`
+      /**
+       * from the selected answer, we search on database based on the field `anime_name_jp`
+       *
+       * @remarks
+       * (database: anime table)
+       */
+
       const answer = await getAnimeByColumn(client, {
          column: 'anime_name_jp',
          value: selected?.anime_name_jp,
       }).then((result) => result?.data as Anime);
 
-      const isCorrect = answer.id === (anime as DailyRecord).anime_id; // [explain] check if the user is correct with the answer
-      const answer_message = message(isCorrect); // [explain] get the correct/wrong messages to show the user
+      /**
+       * Compares the selected answer (id) with the daily anime (anime_id) and returns a boolean value indicating whether they match.
+       * @returns {boolean} `true` if the answer (id) matches the anime (anime_id), `false` otherwise.
+       */
+      const isCorrect = answer.id === (anime as DailyRecord).anime_id;
 
-      // [explain] setInputValue to empty string
+      /**
+       * Based on isCorrect value, it selects a random {title, description} for message.
+       * @returns {Object} title and description in an object.
+       */
+      const answer_message = message(isCorrect);
+
+      /*** Set the value to empty string.*/
       setInputValue('');
       if (isCorrect) {
          toast(answer_message?.title, {
@@ -90,7 +103,11 @@ export function DailyPage() {
          return;
       }
 
-      // [explain]: if the user is correct, show the toast, fire decrement method and remove the selected answer
+      /**
+       * if the user is not correct, show the toast
+       * fire decrement() to change the value of lives
+       * set the value of selected to null
+       * */
       toast(answer_message?.title, {
          description: lives !== 1 ? answer_message?.description : null,
       });
@@ -130,7 +147,7 @@ export function DailyPage() {
             }`}
          >
             <div
-               className={`flex flex-col w-full shadow-card rounded-lg mb-10 max-sm:mb-5 sticky z-49 top-[64px] left-0 z-10`}
+               className={`flex flex-col w-full shadow-card rounded-lg mb-4 max-sm:mb-5 sticky z-49 top-[64px] left-0 z-10`}
             >
                <div className="flex flex-row gap-10 items-center flex-1">
                   <Command className="w-full z-50" shouldFilter={false}>
@@ -145,15 +162,16 @@ export function DailyPage() {
                         onFocus={() => setIsOpen(true)}
                         placeholder="Search anime"
                         disabled={false}
-                        className={`w-full transition-all border border-border ${
-                           isOpen
-                              ? 'rounded-tl-xl rounded-tr-xl border-b-transparent'
-                              : 'rounded-xl'
-                        } py-1 xl:px-5 px-3 placeholder:text-tGray-600 text-[16px] lg:h-[54px] leading-7 flex-1 bg-tGray-100`}
+                        className="mb-1 caret-ui-fg-base bg-ui-bg-field hover:bg-ui-bg-field-hover border-ui-border-base shadow-buttons-neutral placeholder-ui-fg-muted text-ui-fg-base transition-fg relative w-full appearance-none rounded-md border outline-none focus:border-ui-border-interactive focus:shadow-borders-active disabled:text-ui-fg-disabled disabled:!bg-ui-bg-disabled disabled:!border-ui-border-base disabled:placeholder-ui-fg-disabled disabled:cursor-not-allowed disabled:!shadow-none aria-[invalid=true]:!border-ui-border-error aria-[invalid=true]:focus:!shadow-borders-error invalid:!border-ui-border-error invalid:focus:!shadow-borders-error [&::--webkit-search-cancel-button]:hidden [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden txt-compact-medium h-10 px-3 py-[9px]"
+                        // className={`w-full transition-all border border-border ${
+                        //    isOpen
+                        //       ? 'rounded-tl-xl rounded-tr-xl border-b-transparent'
+                        //       : 'rounded-xl'
+                        // } py-1 xl:px-5 px-3 placeholder:text-tGray-600 text-[16px] lg:h-[54px] leading-7 flex-1 bg-tGray-100`}
                      />
                      <div className={`relative z-50`}>
                         {isOpen ? (
-                           <div className="absolute top-0 z-20 w-full border bg-white rounded-bl-xl rounded-br-xl outline-none animate-in fade-in-0 zoom-in-95">
+                           <div className="absolute top-0 z-20 w-full border rounded-md bg-white rounded-bl-xl rounded-br-xl outline-none animate-in fade-in-0 zoom-in-95">
                               <CommandList>
                                  {isFetched && animes?.length === 0 ? (
                                     <div className="py-6 text-center text-sm">
@@ -211,54 +229,45 @@ export function DailyPage() {
                                  {!animesLoading &&
                                  animes &&
                                  animes.length > 0 ? (
-                                    <ScrollArea className="h-[216px]">
-                                       <CommandGroup className="p-2">
-                                          {animes?.map(
-                                             (
-                                                option: AnimeOption,
-                                                index: number
-                                             ) => {
-                                                const isSelected =
-                                                   selected?.anime_name_jp ===
-                                                   option.anime_name_jp;
-                                                return (
-                                                   <CommandItem
-                                                      key={
-                                                         option.anime_name_jp +
-                                                         index
-                                                      }
-                                                      value={
-                                                         option.anime_name_jp
-                                                      }
-                                                      onMouseDown={(event) => {
-                                                         event.preventDefault();
-                                                         event.stopPropagation();
-                                                      }}
-                                                      onSelect={() =>
-                                                         handleSelectOption(
-                                                            option
-                                                         )
-                                                      }
-                                                      className={cn([
-                                                         'flex items-center gap-2 w-full',
-                                                         !isSelected
-                                                            ? 'pl-8'
-                                                            : null,
-                                                      ])}
-                                                   >
-                                                      {isSelected ? (
-                                                         <CheckIcon />
-                                                      ) : null}
-                                                      {option.anime_name_jp ===
-                                                      option.anime_name_en
-                                                         ? option.anime_name_jp
-                                                         : `${option.anime_name_jp} (${option.anime_name_en})`}
-                                                   </CommandItem>
-                                                );
-                                             }
-                                          )}
-                                       </CommandGroup>
-                                    </ScrollArea>
+                                    <CommandGroup className="p-2">
+                                       {animes?.map(
+                                          (
+                                             option: AnimeOption,
+                                             index: number
+                                          ) => {
+                                             const isSelected =
+                                                selected?.anime_name_jp ===
+                                                option.anime_name_jp;
+                                             return (
+                                                <CommandItem
+                                                   key={
+                                                      option.anime_name_jp +
+                                                      index
+                                                   }
+                                                   value={option.anime_name_jp}
+                                                   onMouseDown={(event) => {
+                                                      event.preventDefault();
+                                                      event.stopPropagation();
+                                                   }}
+                                                   onSelect={() =>
+                                                      handleSelectOption(option)
+                                                   }
+                                                   className={cn([
+                                                      'flex items-center gap-2 w-full',
+                                                      !isSelected
+                                                         ? 'pl-8'
+                                                         : null,
+                                                   ])}
+                                                >
+                                                   {option.anime_name_jp ===
+                                                   option.anime_name_en
+                                                      ? option.anime_name_jp
+                                                      : `${option.anime_name_jp} (${option.anime_name_en})`}
+                                                </CommandItem>
+                                             );
+                                          }
+                                       )}
+                                    </CommandGroup>
                                  ) : null}
                               </CommandList>
                            </div>

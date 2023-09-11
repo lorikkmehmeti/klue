@@ -76,6 +76,7 @@ module.exports = {
       },
       fontFamily: {
          inter: ['Inter var', 'sans-serif'],
+         jetbrains: ['JetBrains Mono', 'sans-serif'],
       },
    },
    plugins: [require('tailwindcss-animate')],
