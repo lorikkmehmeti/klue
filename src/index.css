@@ -4,9 +4,11 @@
 @tailwind components;
 @tailwind utilities;
 
-@font-face {
-   font-family: 'JetBrains Mono';
-   src: url('./JetbrainsMono.ttf');
+@layer base {
+   @font-face {
+      font-family: 'JetBrains Mono';
+      src: url('public/JetbrainsMono.ttf');
+   }
 }
 
 @layer base {
