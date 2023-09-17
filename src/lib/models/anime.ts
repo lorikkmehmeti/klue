@@ -14,3 +14,7 @@ export interface AnimeOption {
    anime_description: string;
    release_date: string;
 }
+
+export interface StorageAttempt extends AnimeOption {
+   is_correct: boolean;
+}

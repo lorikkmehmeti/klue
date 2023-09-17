@@ -3,6 +3,7 @@ import {
    getAnimeByColumn,
    getAnimesBySearch,
    getDailyWord,
+   getRandomAnimes,
 } from '@/lib/api/animes-api.ts';
 import { useSupabase } from '@/lib/hooks/use-supabase.ts';
 import { DailyRecord } from '@/lib/models/daily.ts';
@@ -21,6 +22,22 @@ export function useAnimes(searchQuery: string) {
    });
 }
 
+export function useRandomAnimes(searchQuery: string) {
+   const client = useSupabase();
+   const key = ['random-animes', searchQuery];
+
+   const length = searchQuery.length > 0 ? 10 : 5;
+
+   return useQuery({
+      queryKey: key,
+      queryFn: async () => {
+         return getRandomAnimes(client, searchQuery, length).then(
+            (result) => result.data as Anime
+         );
+      },
+   });
+}
+
 export function useDailyAnime() {
    const client = useSupabase();
    const key = ['anime', 'anime-daily-word'];
@@ -32,14 +49,16 @@ export function useDailyAnime() {
 
 export function useAnime(id: string, condition = true) {
    const client = useSupabase();
-   const key = ['single-anime', 'get-single-anime'];
+   const key = ['single-anime', id, condition];
 
    return useQuery({
-     queryKey: key,
-     queryFn: async () => {
-        return getAnimeByColumn(client, { column: 'id', value: id }).then((result) => result.data as Anime)
-     },
-     enabled: condition
+      queryKey: key,
+      queryFn: async () => {
+         return getAnimeByColumn(client, { column: 'id', value: id }).then(
+            (result) => result.data as Anime
+         );
+      },
+      enabled: condition,
    });
 }
 

@@ -3,11 +3,10 @@ import { Link } from 'react-router-dom';
 import { useBreadcrumb } from '@/lib/providers/BreadcrumbProvider.tsx';
 import { useDailyStore } from '@/lib/store/useDailyStore.ts';
 import {
-   Tooltip,
-   TooltipContent,
-   TooltipProvider,
-   TooltipTrigger,
-} from '@/components/ui/tooltip.tsx';
+   Avatar,
+   AvatarFallback,
+   AvatarImage,
+} from '@/components/ui/avatar.tsx';
 
 export function Header() {
    const { breadcrumbs } = useBreadcrumb();
@@ -15,10 +14,10 @@ export function Header() {
    const lives = useDailyStore((state) => state.lives);
 
    return (
-      <div className="sticky top-[.75rem] z-50 z-navigation flex w-full items-center justify-between rounded-lg border py-3 px-4 border-marble-400 bg-white border-marble-400">
-         <div className="flex items-center w-full mx-auto">
+      <div className="z-navigation border-marble-400 border-marble-400 sticky top-[.75rem] z-50 flex w-full items-center justify-between rounded-lg border bg-white px-4 py-3">
+         <div className="mx-auto flex w-full items-center">
             <Link to={'/'} className="">
-               <span className="font-jetbrains text-logo lowercase font-variable ml-1 font-light text-green-700">
+               <span className="text-logo font-variable ml-1 font-jetbrains font-light lowercase text-green-700">
                   klue {lives}
                </span>
             </Link>
@@ -32,25 +31,25 @@ export function Header() {
                   strokeWidth="1"
                   viewBox="0 0 24 24"
                   aria-hidden="true"
-                  className="h-6 w-6 text-muted-foreground/50 flex-none"
+                  className="h-6 w-6 flex-none text-muted-foreground/50"
                >
                   <path d="M16.88 3.549L7.12 20.451"></path>
                </svg>
-               <div className="w-full flex items-center flex-wrap flex-none">
+               <div className="flex w-full flex-none flex-wrap items-center">
                   {breadcrumbs.map(({ label, link }, index) => {
                      return (
                         <React.Fragment key={index}>
                            <Link
                               to={link}
-                              className="py-1 cursor-pointer overflow-hidden whitespace-nowrap shrink text-sm font-medium flex items-center select-none transition-all p-2 rounded-md
+                              className="flex shrink cursor-pointer select-none items-center overflow-hidden whitespace-nowrap rounded-md p-2 py-1.5 text-sm font-medium transition-all
                      hover:bg-zinc-300/30"
                            >
-                              <span className="no-underline text-ellipsis whitespace-nowrap">
+                              <span className="text-ellipsis whitespace-nowrap no-underline">
                                  {label}
                               </span>
                            </Link>
                            {index !== breadcrumbs.length - 1 && (
-                              <div className="flex text-zinc-300 leading-0">
+                              <div className="leading-0 flex text-zinc-300">
                                  <svg
                                     width="16"
                                     height="16"
@@ -70,7 +69,7 @@ export function Header() {
                   })}
                </div>
             </div>
-            <div className="flex items-center justify-between flex-none ml-auto gap-3">
+            <div className="ml-auto flex flex-none items-center justify-between gap-3">
                {/*<button className="bg-zinc-100 shadow-sm ring-1 ring-gray-200 border-transparent inline-flex relative items-center justify-center align-middle whitespace-nowrap overflow-hidden font-semibold rounded text-xs h-[28px]">*/}
                {/*   <span className="flex flex-grow justify-center px-2 gap-2">*/}
                {/*      <span>*/}
@@ -92,45 +91,67 @@ export function Header() {
                {/*      {lives}*/}
                {/*   </span>*/}
                {/*</button>*/}
-               {['Sign up', 'Login'].map((button: string) => {
-                  return (
-                     <TooltipProvider key={button}>
-                        <Tooltip>
-                           <TooltipTrigger asChild>
-                              <button
-                                 disabled
-                                 className={`max-sm:hidden focus:outline-none focus-visible:outline-0 disabled:cursor-not-allowed disabled:opacity-75 flex-shrink-0 font-medium rounded-md text-sm gap-x-1.5 px-3.5 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 text-gray-700 dark:text-gray-200 bg-gray-50 hover:bg-gray-100 disabled:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700/50 dark:disabled:bg-gray-800 focus-visible:ring-2 focus-visible:ring-primary-500 dark:focus-visible:ring-primary-400 inline-flex items-center`}
-                              >
-                                 {button}
-                              </button>
-                           </TooltipTrigger>
-                           <TooltipContent>
-                              <p>Not available right now</p>
-                           </TooltipContent>
-                        </Tooltip>
-                     </TooltipProvider>
-                  );
-               })}
+               {/*{['Sign up', 'Login'].map((button: string) => {*/}
+               {/*   return (*/}
+               {/*      <TooltipProvider key={button}>*/}
+               {/*         <Tooltip>*/}
+               {/*            <TooltipTrigger asChild>*/}
+               {/*               <button*/}
+               {/*                  disabled*/}
+               {/*                  className={`max-sm:hidden focus:outline-none focus-visible:outline-0 disabled:cursor-not-allowed disabled:opacity-75 flex-shrink-0 font-medium rounded-md text-sm gap-x-1.5 px-3.5 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 text-gray-700 dark:text-gray-200 bg-gray-50 hover:bg-gray-100 disabled:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700/50 dark:disabled:bg-gray-800 focus-visible:ring-2 focus-visible:ring-primary-500 dark:focus-visible:ring-primary-400 inline-flex items-center`}*/}
+               {/*               >*/}
+               {/*                  {button}*/}
+               {/*               </button>*/}
+               {/*            </TooltipTrigger>*/}
+               {/*            <TooltipContent>*/}
+               {/*               <p>Not available right now</p>*/}
+               {/*            </TooltipContent>*/}
+               {/*         </Tooltip>*/}
+               {/*      </TooltipProvider>*/}
+               {/*   );*/}
+               {/*})}*/}
 
                <button
-                  className="flex items-center justify-center text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 shadow-none hover:bg-accent hover:text-accent-foreground rounded-full"
+                  className="flex items-center justify-center rounded-full text-sm font-medium shadow-none ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
                   type="button"
                >
-                  <img
-                     alt="Avatar"
-                     loading="lazy"
-                     width="60"
-                     height="60"
-                     decoding="async"
-                     data-nimg="1"
-                     className="h-6 w-6 select-none rounded-full ring-1 ring-zinc-100/10 transition-opacity duration-300 hover:opacity-80"
-                     srcSet={
-                        'https://64.media.tumblr.com/a44fd2891a5c16a1c32a75eb42f2e345/7d5e3d4360544ca1-0e/s640x960/0c7074c675f8c3d417418a999451a3e45f2a1a75.jpg'
-                     }
-                     src={
-                        'https://64.media.tumblr.com/a44fd2891a5c16a1c32a75eb42f2e345/7d5e3d4360544ca1-0e/s640x960/0c7074c675f8c3d417418a999451a3e45f2a1a75.jpg'
-                     }
-                  />
+                  <Avatar className="h-8 w-8">
+                     <AvatarImage src="https://github.com/lorikkmehmeti.png" />
+                     <AvatarFallback className="bg-[#f5be5a] p-1.5">
+                        <svg
+                           width="48"
+                           height="48"
+                           viewBox="0 0 48 48"
+                           fill="none"
+                           xmlns="http://www.w3.org/2000/svg"
+                        >
+                           <path
+                              d="M31 20L38 24L45 20V12L38 16L31 12V20Z"
+                              fill="#050A0A"
+                           />
+                           <path
+                              d="M38 40L31 36V28L38 24V32L45 36L38 40Z"
+                              fill="#050A0A"
+                           />
+                           <path
+                              d="M24 32L17 36V44L24 48V40L31 36L24 32Z"
+                              fill="#050A0A"
+                           />
+                           <path
+                              d="M3 28L10 24L17 28V36L10 32L3 36L3 28Z"
+                              fill="#050A0A"
+                           />
+                           <path
+                              d="M10 8L17 12V20L10 24L10 16L3 12L10 8Z"
+                              fill="#050A0A"
+                           />
+                           <path
+                              d="M24 16L31 12V4L24 0V8L17 12L24 16Z"
+                              fill="#050A0A"
+                           />
+                        </svg>
+                     </AvatarFallback>
+                  </Avatar>
                </button>
             </div>
          </div>

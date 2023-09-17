@@ -1,4 +1,10 @@
-import React, { ElementRef, useCallback, useEffect, useState } from 'react';
+import React, {
+   ElementRef,
+   useCallback,
+   useEffect,
+   useMemo,
+   useState,
+} from 'react';
 import { Anime, AnimeOption, Keyword } from '@/lib/models';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import { Command } from 'cmdk';
@@ -7,7 +13,6 @@ import {
    CommandItem,
    CommandList,
 } from '@/components/ui/command.tsx';
-import { cn } from '@/lib/utils.ts';
 import { useAnimes, useDebounce, useKeywords, useSupabase } from '@/lib/hooks';
 import { useBreadcrumb } from '@/lib/providers/BreadcrumbProvider.tsx';
 import { useAnime, useDailyAnime } from '@/lib/hooks/use-animes.ts';
@@ -16,13 +21,39 @@ import { getAnimeByColumn } from '@/lib/api/animes-api.ts';
 import { useDailyStore } from '@/lib/store/useDailyStore.ts';
 import { toast } from 'sonner';
 import { message } from '@/lib/constants/messages.ts';
+import { CircleIcon, CountdownTimerIcon } from '@radix-ui/react-icons';
+import { cn } from '@/lib/utils';
+import { ScrollArea } from '@/components/ui/scroll-area.tsx';
+import { Button } from '@/components/ui';
 
 export function DailyPage() {
-   const decrement = useDailyStore((state) => state.decrement);
-   const canPlay = useDailyStore((state) => state.canPlay);
-   const reset = useDailyStore((state) => state.reset);
-   const lives = useDailyStore((state) => state.lives);
-   const foundRightAnswer = useDailyStore((state) => state.foundRightAnswer);
+   const {
+      decrement,
+      canPlay,
+      reset,
+      lives,
+      foundRightAnswer,
+      addAttempt,
+      resetAttempts,
+   } = useDailyStore((state) => state);
+   const attempts = useDailyStore((state) => state.attempts);
+
+   const filteredAttempts = useMemo(() => {
+      return attempts.filter(
+         (attempt, index, self) =>
+            index ===
+            self.findIndex(
+               (a) =>
+                  a.anime_name_jp === attempt.anime_name_jp &&
+                  a.anime_name_en === attempt.anime_name_en &&
+                  a.anime_description === attempt.anime_description &&
+                  a.release_date === attempt.release_date &&
+                  a.is_correct === attempt.is_correct
+            )
+      );
+   }, [attempts]);
+
+   console.log({ attempts, filteredAttempts });
 
    const inputRef = React.useRef<ElementRef<'input'> | null>(null);
 
@@ -56,6 +87,8 @@ export function DailyPage() {
       !canPlay && !!anime
    );
 
+   const [attemptLoading, setAttemptLoading] = useState<boolean>(false);
+
    const { addBreadcrumb, clearBreadcrumbs } = useBreadcrumb();
 
    useEffect(() => {
@@ -68,17 +101,25 @@ export function DailyPage() {
 
    async function CheckAnswer(selected: AnimeOption) {
       if (!canPlay) return;
+
+      /*** Set the value to empty string.*/
+      setInputValue('');
+
       /**
        * from the selected answer, we search on database based on the field `anime_name_jp`
        *
        * @remarks
        * (database: anime table)
        */
-
+      setAttemptLoading(true);
       const answer = await getAnimeByColumn(client, {
          column: 'anime_name_jp',
          value: selected?.anime_name_jp,
-      }).then((result) => result?.data as Anime);
+      })
+         .then((result) => result?.data as Anime)
+         .finally(() => {
+            setAttemptLoading(false);
+         });
 
       /**
        * Compares the selected answer (id) with the daily anime (anime_id) and returns a boolean value indicating whether they match.
@@ -92,8 +133,9 @@ export function DailyPage() {
        */
       const answer_message = message(isCorrect);
 
-      /*** Set the value to empty string.*/
-      setInputValue('');
+      addAttempt({ ...selected, is_correct: isCorrect });
+
+      setIsOpen(false);
       if (isCorrect) {
          toast(answer_message?.title, {
             description: answer_message?.description,
@@ -115,17 +157,16 @@ export function DailyPage() {
       setSelected(null);
    }
 
-   const handleSelectOption = (selectedOption: AnimeOption) => {
+   async function handleSelectOption(selectedOption: AnimeOption) {
       if (!canPlay) return;
-      setSelected(selectedOption);
       setInputValue(selectedOption.anime_name_jp);
 
-      void CheckAnswer(selectedOption);
+      await CheckAnswer(selectedOption);
 
       setTimeout(() => {
          inputRef?.current?.blur();
       }, 0);
-   };
+   }
 
    const handleBlur = useCallback(() => {
       setIsOpen(false);
@@ -133,8 +174,113 @@ export function DailyPage() {
 
    return (
       <React.Fragment>
+         <Button
+            onClick={() => {
+               reset();
+               resetAttempts();
+               window.location.reload();
+            }}
+            className="mb-2"
+            size="sm"
+         >
+            Reset localStorage
+         </Button>
+         <div className="mb-2 flex flex-wrap items-center gap-1">
+            {Array.from({ length: 5 }).map((_, index: number) => {
+               return (
+                  <button
+                     key={index}
+                     disabled
+                     className={`focus-visible:ring-primary-500 dark:focus-visible:ring-primary-400 inline-flex h-[32px] min-w-[100px] flex-shrink-0 items-center justify-center gap-x-1.5 rounded-md bg-gray-50 px-3.5 py-1.5 text-center text-sm font-medium text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-100 focus:outline-none focus-visible:outline-0 focus-visible:ring-2 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:opacity-75 dark:bg-gray-800 dark:text-gray-200 dark:ring-gray-700 dark:hover:bg-gray-700/50 dark:disabled:bg-gray-800`}
+                  >
+                     {!attempts[index] ? (
+                        <span>
+                           {attempts.length === index && attemptLoading ? (
+                              <svg
+                                 xmlns="http://www.w3.org/2000/svg"
+                                 width="15"
+                                 height="15"
+                                 viewBox="0 0 24 24"
+                              >
+                                 <g stroke="currentColor">
+                                    <circle
+                                       cx="12"
+                                       cy="12"
+                                       r="9.5"
+                                       fill="none"
+                                       strokeLinecap="round"
+                                       strokeWidth="3"
+                                    >
+                                       <animate
+                                          attributeName="stroke-dasharray"
+                                          calcMode="spline"
+                                          dur="1.5s"
+                                          keySplines="0.42,0,0.58,1;0.42,0,0.58,1;0.42,0,0.58,1"
+                                          keyTimes="0;0.475;0.95;1"
+                                          repeatCount="indefinite"
+                                          values="0 150;42 150;42 150;42 150"
+                                       />
+                                       <animate
+                                          attributeName="stroke-dashoffset"
+                                          calcMode="spline"
+                                          dur="1.5s"
+                                          keySplines="0.42,0,0.58,1;0.42,0,0.58,1;0.42,0,0.58,1"
+                                          keyTimes="0;0.475;0.95;1"
+                                          repeatCount="indefinite"
+                                          values="0;-16;-59;-59"
+                                       />
+                                    </circle>
+                                    <animateTransform
+                                       attributeName="transform"
+                                       dur="2s"
+                                       repeatCount="indefinite"
+                                       type="rotate"
+                                       values="0 12 12;360 12 12"
+                                    />
+                                 </g>
+                              </svg>
+                           ) : (
+                              `Attempt ${index + 1}`
+                           )}
+                        </span>
+                     ) : (
+                        <span className="flex items-center gap-1">
+                           {attempts[index]?.anime_name_jp}
+                           {attempts[index]?.is_correct ? (
+                              <svg
+                                 xmlns="http://www.w3.org/2000/svg"
+                                 width="18"
+                                 height="18"
+                                 className="text-green-500"
+                                 viewBox="0 0 24 24"
+                              >
+                                 <path
+                                    fill="currentColor"
+                                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10s10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5l1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
+                                 />
+                              </svg>
+                           ) : (
+                              <svg
+                                 xmlns="http://www.w3.org/2000/svg"
+                                 width="18"
+                                 height="18"
+                                 viewBox="0 0 24 24"
+                                 className="text-red-500"
+                              >
+                                 <path
+                                    fill="currentColor"
+                                    d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10s10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17L12 13.41L8.41 17L7 15.59L10.59 12L7 8.41L8.41 7L12 10.59L15.59 7L17 8.41L13.41 12L17 15.59z"
+                                 />
+                              </svg>
+                           )}
+                        </span>
+                     )}
+                  </button>
+               );
+            })}
+         </div>
          {correctAnime && (
-            <div className="w-full text-xl bg-white shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0 px-4 py-3 text-center justify-center rounded-md flex items-center transition-colors mb-2">
+            <div className="mb-2 flex w-full items-center justify-center rounded-md bg-white px-4 py-3 text-center text-xl shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 transition-colors dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0">
                <span className="ml-1 font-semibold">
                   {correctAnime.anime_name_en}
                </span>
@@ -143,14 +289,14 @@ export function DailyPage() {
 
          <div
             className={`${
-               !canPlay ? 'opacity-40 select-none disabled-area' : ''
+               !canPlay ? 'disabled-area select-none opacity-40' : ''
             }`}
          >
             <div
-               className={`flex flex-col w-full shadow-card rounded-lg mb-4 max-sm:mb-5 sticky z-49 top-[64px] left-0 z-10`}
+               className={`z-49 left-0 top-[64px] z-10 mb-4 flex w-full flex-col rounded-lg shadow-card max-sm:mb-5`}
             >
-               <div className="flex flex-row gap-10 items-center flex-1">
-                  <Command className="w-full z-50" shouldFilter={false}>
+               <div className="flex flex-1 flex-row items-center gap-10">
+                  <Command className="z-50 w-full" shouldFilter={false}>
                      <Command.Input
                         ref={inputRef}
                         value={inputValue}
@@ -161,114 +307,146 @@ export function DailyPage() {
                         }}
                         onFocus={() => setIsOpen(true)}
                         placeholder="Search anime"
-                        disabled={false}
-                        className="mb-1 caret-ui-fg-base bg-ui-bg-field hover:bg-ui-bg-field-hover border-ui-border-base shadow-buttons-neutral placeholder-ui-fg-muted text-ui-fg-base transition-fg relative w-full appearance-none rounded-md border outline-none focus:border-ui-border-interactive focus:shadow-borders-active disabled:text-ui-fg-disabled disabled:!bg-ui-bg-disabled disabled:!border-ui-border-base disabled:placeholder-ui-fg-disabled disabled:cursor-not-allowed disabled:!shadow-none aria-[invalid=true]:!border-ui-border-error aria-[invalid=true]:focus:!shadow-borders-error invalid:!border-ui-border-error invalid:focus:!shadow-borders-error [&::--webkit-search-cancel-button]:hidden [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden txt-compact-medium h-10 px-3 py-[9px]"
-                        // className={`w-full transition-all border border-border ${
-                        //    isOpen
-                        //       ? 'rounded-tl-xl rounded-tr-xl border-b-transparent'
-                        //       : 'rounded-xl'
-                        // } py-1 xl:px-5 px-3 placeholder:text-tGray-600 text-[16px] lg:h-[54px] leading-7 flex-1 bg-tGray-100`}
+                        disabled={!canPlay}
+                        className="caret-ui-fg-base bg-ui-bg-field hover:bg-ui-bg-field-hover border-ui-border-base shadow-buttons-neutral placeholder-ui-fg-muted text-ui-fg-base transition-fg focus:border-ui-border-interactive focus:shadow-borders-active disabled:text-ui-fg-disabled disabled:!bg-ui-bg-disabled disabled:!border-ui-border-base disabled:placeholder-ui-fg-disabled aria-[invalid=true]:!border-ui-border-error aria-[invalid=true]:focus:!shadow-borders-error invalid:!border-ui-border-error invalid:focus:!shadow-borders-error txt-compact-medium relative mb-1 h-10 w-full appearance-none rounded-md border px-3 py-[9px] outline-none disabled:cursor-not-allowed disabled:!shadow-none [&::--webkit-search-cancel-button]:hidden [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden"
                      />
                      <div className={`relative z-50`}>
                         {isOpen ? (
-                           <div className="absolute top-0 z-20 w-full border rounded-md bg-white rounded-bl-xl rounded-br-xl outline-none animate-in fade-in-0 zoom-in-95">
+                           <div className="max-:smshadow-2xl absolute top-0 z-20 w-full rounded-md rounded-bl-xl rounded-br-xl border bg-white shadow-md outline-none animate-in fade-in-0 zoom-in-95">
                               <CommandList>
-                                 {isFetched && animes?.length === 0 ? (
-                                    <div className="py-6 text-center text-sm">
-                                       No results found
-                                    </div>
-                                 ) : null}
-                                 {/* TODO add a spinner */}
-                                 {animesLoading && (
-                                    <div className="flex py-[3rem] text-stone-400 items-center justify-center">
-                                       <svg
-                                          xmlns="http://www.w3.org/2000/svg"
-                                          width="32"
-                                          height="32"
-                                          viewBox="0 0 24 24"
-                                       >
-                                          <g stroke="currentColor">
-                                             <circle
-                                                cx="12"
-                                                cy="12"
-                                                r="9.5"
-                                                fill="none"
-                                                strokeLinecap="round"
-                                                strokeWidth="3"
-                                             >
-                                                <animate
-                                                   attributeName="stroke-dasharray"
-                                                   calcMode="spline"
-                                                   dur="1.5s"
-                                                   keySplines="0.42,0,0.58,1;0.42,0,0.58,1;0.42,0,0.58,1"
-                                                   keyTimes="0;0.475;0.95;1"
-                                                   repeatCount="indefinite"
-                                                   values="0 150;42 150;42 150;42 150"
-                                                />
-                                                <animate
-                                                   attributeName="stroke-dashoffset"
-                                                   calcMode="spline"
-                                                   dur="1.5s"
-                                                   keySplines="0.42,0,0.58,1;0.42,0,0.58,1;0.42,0,0.58,1"
-                                                   keyTimes="0;0.475;0.95;1"
-                                                   repeatCount="indefinite"
-                                                   values="0;-16;-59;-59"
-                                                />
-                                             </circle>
-                                             <animateTransform
-                                                attributeName="transform"
-                                                dur="2s"
-                                                repeatCount="indefinite"
-                                                type="rotate"
-                                                values="0 12 12;360 12 12"
-                                             />
-                                          </g>
-                                       </svg>
-                                    </div>
-                                 )}
-                                 {!animesLoading &&
-                                 animes &&
-                                 animes.length > 0 ? (
-                                    <CommandGroup className="p-2">
-                                       {animes?.map(
-                                          (
-                                             option: AnimeOption,
-                                             index: number
-                                          ) => {
-                                             const isSelected =
-                                                selected?.anime_name_jp ===
-                                                option.anime_name_jp;
-                                             return (
-                                                <CommandItem
-                                                   key={
-                                                      option.anime_name_jp +
-                                                      index
-                                                   }
-                                                   value={option.anime_name_jp}
-                                                   onMouseDown={(event) => {
-                                                      event.preventDefault();
-                                                      event.stopPropagation();
-                                                   }}
-                                                   onSelect={() =>
-                                                      handleSelectOption(option)
-                                                   }
-                                                   className={cn([
-                                                      'flex items-center gap-2 w-full',
-                                                      !isSelected
-                                                         ? 'pl-8'
-                                                         : null,
-                                                   ])}
+                                 <ScrollArea className="h-[280px] max-sm:h-[230px]">
+                                    {!debouncedValue &&
+                                    filteredAttempts.length > 0 ? (
+                                       <CommandGroup heading="Recent searches">
+                                          {filteredAttempts.map(
+                                             (tri, index) => {
+                                                return (
+                                                   <CommandItem
+                                                      key={index}
+                                                      value={tri.anime_name_jp}
+                                                      onMouseDown={(event) => {
+                                                         event.preventDefault();
+                                                         event.stopPropagation();
+                                                      }}
+                                                      onSelect={() =>
+                                                         void handleSelectOption(
+                                                            tri
+                                                         )
+                                                      }
+                                                   >
+                                                      <CountdownTimerIcon className="mr-2 h-4 w-4" />
+                                                      <span>
+                                                         {tri.anime_name_jp ===
+                                                         tri.anime_name_en
+                                                            ? tri.anime_name_jp
+                                                            : `${tri.anime_name_jp} (${tri.anime_name_en})`}
+                                                      </span>
+                                                   </CommandItem>
+                                                );
+                                             }
+                                          )}
+                                       </CommandGroup>
+                                    ) : null}
+                                    {isFetched && animes?.length === 0 ? (
+                                       <div className="py-6 text-center text-sm">
+                                          No results found
+                                       </div>
+                                    ) : null}
+                                    {animesLoading && (
+                                       <div className="flex items-center justify-center py-[3rem] text-stone-400">
+                                          <svg
+                                             xmlns="http://www.w3.org/2000/svg"
+                                             width="32"
+                                             height="32"
+                                             viewBox="0 0 24 24"
+                                          >
+                                             <g stroke="currentColor">
+                                                <circle
+                                                   cx="12"
+                                                   cy="12"
+                                                   r="9.5"
+                                                   fill="none"
+                                                   strokeLinecap="round"
+                                                   strokeWidth="3"
                                                 >
-                                                   {option.anime_name_jp ===
-                                                   option.anime_name_en
-                                                      ? option.anime_name_jp
-                                                      : `${option.anime_name_jp} (${option.anime_name_en})`}
-                                                </CommandItem>
-                                             );
-                                          }
-                                       )}
-                                    </CommandGroup>
-                                 ) : null}
+                                                   <animate
+                                                      attributeName="stroke-dasharray"
+                                                      calcMode="spline"
+                                                      dur="1.5s"
+                                                      keySplines="0.42,0,0.58,1;0.42,0,0.58,1;0.42,0,0.58,1"
+                                                      keyTimes="0;0.475;0.95;1"
+                                                      repeatCount="indefinite"
+                                                      values="0 150;42 150;42 150;42 150"
+                                                   />
+                                                   <animate
+                                                      attributeName="stroke-dashoffset"
+                                                      calcMode="spline"
+                                                      dur="1.5s"
+                                                      keySplines="0.42,0,0.58,1;0.42,0,0.58,1;0.42,0,0.58,1"
+                                                      keyTimes="0;0.475;0.95;1"
+                                                      repeatCount="indefinite"
+                                                      values="0;-16;-59;-59"
+                                                   />
+                                                </circle>
+                                                <animateTransform
+                                                   attributeName="transform"
+                                                   dur="2s"
+                                                   repeatCount="indefinite"
+                                                   type="rotate"
+                                                   values="0 12 12;360 12 12"
+                                                />
+                                             </g>
+                                          </svg>
+                                       </div>
+                                    )}
+                                    {!animesLoading &&
+                                    animes &&
+                                    animes.length > 0 ? (
+                                       <CommandGroup
+                                          className=""
+                                          heading="Animes list"
+                                       >
+                                          {animes?.map(
+                                             (
+                                                option: AnimeOption,
+                                                index: number
+                                             ) => {
+                                                return (
+                                                   <CommandItem
+                                                      key={
+                                                         option.anime_name_jp +
+                                                         index
+                                                      }
+                                                      value={
+                                                         option.anime_name_jp
+                                                      }
+                                                      onMouseDown={(event) => {
+                                                         event.preventDefault();
+                                                         event.stopPropagation();
+                                                      }}
+                                                      onSelect={() =>
+                                                         void handleSelectOption(
+                                                            option
+                                                         )
+                                                      }
+                                                      className={cn([
+                                                         'flex w-full gap-2',
+                                                      ])}
+                                                   >
+                                                      <CircleIcon className="h-4 w-4" />
+                                                      <span>
+                                                         {option.anime_name_jp ===
+                                                         option.anime_name_en
+                                                            ? option.anime_name_jp
+                                                            : `${option.anime_name_jp} (${option.anime_name_en})`}
+                                                      </span>
+                                                   </CommandItem>
+                                                );
+                                             }
+                                          )}
+                                       </CommandGroup>
+                                    ) : null}
+                                 </ScrollArea>
                               </CommandList>
                            </div>
                         ) : null}
@@ -281,7 +459,7 @@ export function DailyPage() {
                     return (
                        <Skeleton
                           key={index}
-                          className="w-full h-[32px] mb-3 rounded-md bg-zinc-200/50  z-0"
+                          className="z-0 mb-3 h-[32px] w-full rounded-md  bg-zinc-200/50"
                        />
                     );
                  })
@@ -292,7 +470,7 @@ export function DailyPage() {
                        return (
                           <button
                              key={index}
-                             className="w-full text-sm bg-white shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0 px-2 py-1 rounded-md flex items-center transition-colors mb-2"
+                             className="mb-2 flex w-full items-center rounded-md bg-white px-2 py-1 text-sm shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 transition-colors dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0"
                           >
                              <span className="flex px-3 py-1">
                                 <svg

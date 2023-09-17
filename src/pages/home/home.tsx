@@ -6,7 +6,7 @@ export function Home() {
          role="list"
          className="grid grid-cols-1 gap-8 sm:grid-cols-1 lg:grid-cols-2"
       >
-         <li className="relative flex flex-col items-start hover:bg-zinc-800/5 rounded-md border border-transparent hover:border-zinc-800/5 transition-all">
+         <li className="relative flex flex-col items-start rounded-md border border-transparent transition-all hover:border-zinc-800/5 hover:bg-zinc-800/5">
             <Link to="/daily" className="p-6">
                <div className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0">
                   <svg
@@ -39,13 +39,13 @@ export function Home() {
                      <span className="relative z-10">Daily Challenge</span>
                   </span>
                </h2>
-               <p className="relative z-10 mt-2 text-sm text-zinc-600 dark:text-zinc-400 pointer-events-none">
+               <p className="pointer-events-none relative z-10 mt-2 text-sm text-zinc-600 dark:text-zinc-400">
                   Test your plot knowledge daily! Decode anime from keywords.
                   New challenge, new story, every day.
                </p>
             </Link>
          </li>
-         <li className="relative flex flex-col items-start hover:bg-zinc-800/5 rounded-md border border-transparent hover:border-zinc-800/5 transition-all">
+         <li className="relative flex flex-col items-start rounded-md border border-transparent transition-all hover:border-zinc-800/5 hover:bg-zinc-800/5">
             <Link to="/unlimited" className="p-6">
                <div className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0">
                   <svg
@@ -72,16 +72,16 @@ export function Home() {
                      <span className="relative z-10">Unlimited Challenge</span>
                   </span>
                </h2>
-               <p className="relative z-10 mt-2 text-sm text-zinc-600 dark:text-zinc-400 pointer-events-none">
+               <p className="pointer-events-none relative z-10 mt-2 text-sm text-zinc-600 dark:text-zinc-400">
                   Endless plot puzzles await! Anime revealed by keywords. Dive
                   into limitless entertainment and guess them all.
                </p>
             </Link>
          </li>
-         <li className="pointer-events-none disabled:opacity-30 relative flex flex-col items-start hover:bg-zinc-800/5 rounded-md border border-transparent hover:border-zinc-800/5 transition-all">
+         <li className="pointer-events-none relative flex flex-col items-start rounded-md border border-transparent transition-all hover:border-zinc-800/5 hover:bg-zinc-800/5 disabled:opacity-30">
             <Link
                to="/"
-               className="disabled pointer-events-none opacity-70 p-6"
+               className="disabled pointer-events-none p-6 opacity-70"
             >
                <div className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0">
                   <svg
@@ -100,22 +100,22 @@ export function Home() {
                   <span>
                      <span className="relative z-10">
                         Challenge your friends{' '}
-                        <span className="bg-gray-100 text-gray-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">
+                        <span className="mr-2 rounded bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800 dark:bg-gray-700 dark:text-gray-300">
                            Coming soon
                         </span>
                      </span>
                   </span>
                </h2>
-               <p className="relative z-10 mt-2 text-sm text-zinc-600 dark:text-zinc-400 pointer-events-none">
+               <p className="pointer-events-none relative z-10 mt-2 text-sm text-zinc-600 dark:text-zinc-400">
                   Compete head-to-head! Who decodes anime names faster? Battle
                   wits in this thrilling challenge!
                </p>
             </Link>
          </li>
-         <li className="pointer-events-none disabled:opacity-30 relative flex flex-col items-start hover:bg-zinc-800/5 rounded-md border border-transparent hover:border-zinc-800/5 transition-all">
+         <li className="pointer-events-none relative flex flex-col items-start rounded-md border border-transparent transition-all hover:border-zinc-800/5 hover:bg-zinc-800/5 disabled:opacity-30">
             <Link
                to="/"
-               className="disabled pointer-events-none opacity-70 p-6"
+               className="disabled pointer-events-none p-6 opacity-70"
             >
                <div className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0">
                   <svg
@@ -138,13 +138,13 @@ export function Home() {
                   <span>
                      <span className="relative z-10">
                         Random Packs{' '}
-                        <span className="bg-gray-100 text-gray-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">
+                        <span className="mr-2 rounded bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800 dark:bg-gray-700 dark:text-gray-300">
                            Coming soon
                         </span>
                      </span>
                   </span>
                </h2>
-               <p className="relative z-10 mt-2 text-sm text-zinc-600 dark:text-zinc-400 pointer-events-none">
+               <p className="pointer-events-none relative z-10 mt-2 text-sm text-zinc-600 dark:text-zinc-400">
                   Unlock the mystery! Select an anime pack, guess the titles
                   within. Will you conquer the randomness and name them all?
                </p>

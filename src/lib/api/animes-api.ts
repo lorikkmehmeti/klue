@@ -15,6 +15,18 @@ export async function getAnimesBySearch(
       .limit(limit);
 }
 
+// TODO rethink this
+export async function getRandomAnimes(
+   client: SupabaseClient,
+   search_query: string,
+   limit_count = 10
+) {
+   return client.rpc('select_random_anime', {
+      limit_count,
+      search_query,
+   });
+}
+
 export async function getDailyWord(client: SupabaseClient) {
    const currentDate = new Date();
    const options: Intl.DateTimeFormatOptions = {

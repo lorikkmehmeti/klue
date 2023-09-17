@@ -37,7 +37,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
          <SupabaseProvider>
             <BreadcrumbProvider>
                <RouterProvider router={router} />
-               <Toaster position={window.innerWidth > 768 ? 'top-center' : "bottom-center"} duration={3000} />
+               <Toaster position="top-right" duration={3000} />
             </BreadcrumbProvider>
          </SupabaseProvider>
       </QueryClientProvider>
