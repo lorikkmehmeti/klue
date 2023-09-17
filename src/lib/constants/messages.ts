@@ -52,8 +52,10 @@ export const wm: { title: string; description: string }[] = [
 export type Message = {
    title: string;
    description: string;
-}
+};
 
 export const message = (condition: boolean) => {
-   return (condition ? rm.getRandomElement() : wm.getRandomElement()) as Message;
+   return (
+      condition ? rm.getRandomElement() : wm.getRandomElement()
+   ) as Message;
 };

@@ -1,4 +1,3 @@
-import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import { RouterProvider } from 'react-router-dom';
@@ -32,14 +31,12 @@ const queryClient = new QueryClient({
 });
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-   <React.StrictMode>
-      <QueryClientProvider client={queryClient}>
-         <SupabaseProvider>
-            <BreadcrumbProvider>
-               <RouterProvider router={router} />
-               <Toaster position="top-right" duration={3000} />
-            </BreadcrumbProvider>
-         </SupabaseProvider>
-      </QueryClientProvider>
-   </React.StrictMode>
+   <QueryClientProvider client={queryClient}>
+      <SupabaseProvider>
+         <BreadcrumbProvider>
+            <RouterProvider router={router} />
+            <Toaster position="top-right" duration={3000} />
+         </BreadcrumbProvider>
+      </SupabaseProvider>
+   </QueryClientProvider>
 );

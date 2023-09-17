@@ -5,26 +5,32 @@ import React, {
    useMemo,
    useState,
 } from 'react';
+
 import { Anime, AnimeOption, Keyword } from '@/lib/models';
-import { Skeleton } from '@/components/ui/skeleton.tsx';
 import { Command } from 'cmdk';
-import {
-   CommandGroup,
-   CommandItem,
-   CommandList,
-} from '@/components/ui/command.tsx';
-import { useAnimes, useDebounce, useKeywords, useSupabase } from '@/lib/hooks';
+import { message } from '@/lib/constants/messages.ts';
+
 import { useBreadcrumb } from '@/lib/providers/BreadcrumbProvider.tsx';
 import { useAnime, useDailyAnime } from '@/lib/hooks/use-animes.ts';
 import { DailyRecord } from '@/lib/models/daily.ts';
 import { getAnimeByColumn } from '@/lib/api/animes-api.ts';
 import { useDailyStore } from '@/lib/store/useDailyStore.ts';
 import { toast } from 'sonner';
-import { message } from '@/lib/constants/messages.ts';
+
 import { CircleIcon, CountdownTimerIcon } from '@radix-ui/react-icons';
+
 import { cn } from '@/lib/utils';
-import { ScrollArea } from '@/components/ui/scroll-area.tsx';
-import { Button } from '@/components/ui';
+import { useAnimes, useDebounce, useKeywords, useSupabase } from '@/lib/hooks';
+
+import {
+   Button,
+   CommandGroup,
+   CommandItem,
+   CommandList,
+   Loading,
+   ScrollArea,
+   Skeleton,
+} from '@/components/ui';
 
 export function DailyPage() {
    const {
@@ -35,8 +41,8 @@ export function DailyPage() {
       foundRightAnswer,
       addAttempt,
       resetAttempts,
+      attempts,
    } = useDailyStore((state) => state);
-   const attempts = useDailyStore((state) => state.attempts);
 
    const filteredAttempts = useMemo(() => {
       return attempts.filter(
@@ -52,8 +58,6 @@ export function DailyPage() {
             )
       );
    }, [attempts]);
-
-   console.log({ attempts, filteredAttempts });
 
    const inputRef = React.useRef<ElementRef<'input'> | null>(null);
 
@@ -172,6 +176,18 @@ export function DailyPage() {
       setIsOpen(false);
    }, [selected]);
 
+   const openCommand = useCallback(() => {
+      setIsOpen(true);
+   }, [isOpen]);
+
+   const commandValueChange = useCallback(
+      (value: string) => {
+         if (!canPlay) return;
+         setInputValue(value);
+      },
+      [inputValue]
+   );
+
    return (
       <React.Fragment>
          <Button
@@ -196,49 +212,7 @@ export function DailyPage() {
                      {!attempts[index] ? (
                         <span>
                            {attempts.length === index && attemptLoading ? (
-                              <svg
-                                 xmlns="http://www.w3.org/2000/svg"
-                                 width="15"
-                                 height="15"
-                                 viewBox="0 0 24 24"
-                              >
-                                 <g stroke="currentColor">
-                                    <circle
-                                       cx="12"
-                                       cy="12"
-                                       r="9.5"
-                                       fill="none"
-                                       strokeLinecap="round"
-                                       strokeWidth="3"
-                                    >
-                                       <animate
-                                          attributeName="stroke-dasharray"
-                                          calcMode="spline"
-                                          dur="1.5s"
-                                          keySplines="0.42,0,0.58,1;0.42,0,0.58,1;0.42,0,0.58,1"
-                                          keyTimes="0;0.475;0.95;1"
-                                          repeatCount="indefinite"
-                                          values="0 150;42 150;42 150;42 150"
-                                       />
-                                       <animate
-                                          attributeName="stroke-dashoffset"
-                                          calcMode="spline"
-                                          dur="1.5s"
-                                          keySplines="0.42,0,0.58,1;0.42,0,0.58,1;0.42,0,0.58,1"
-                                          keyTimes="0;0.475;0.95;1"
-                                          repeatCount="indefinite"
-                                          values="0;-16;-59;-59"
-                                       />
-                                    </circle>
-                                    <animateTransform
-                                       attributeName="transform"
-                                       dur="2s"
-                                       repeatCount="indefinite"
-                                       type="rotate"
-                                       values="0 12 12;360 12 12"
-                                    />
-                                 </g>
-                              </svg>
+                              <Loading width={15} height={15} />
                            ) : (
                               `Attempt ${index + 1}`
                            )}
@@ -282,7 +256,9 @@ export function DailyPage() {
          {correctAnime && (
             <div className="mb-2 flex w-full items-center justify-center rounded-md bg-white px-4 py-3 text-center text-xl shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 transition-colors dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0">
                <span className="ml-1 font-semibold">
-                  {correctAnime.anime_name_en}
+                  {correctAnime.anime_name_jp === correctAnime.anime_name_en
+                     ? correctAnime.anime_name_jp
+                     : `${correctAnime.anime_name_jp} (${correctAnime.anime_name_en})`}
                </span>
             </div>
          )}
@@ -301,11 +277,8 @@ export function DailyPage() {
                         ref={inputRef}
                         value={inputValue}
                         onBlur={handleBlur}
-                        onValueChange={(val) => {
-                           if (!canPlay) return;
-                           setInputValue(val);
-                        }}
-                        onFocus={() => setIsOpen(true)}
+                        onValueChange={commandValueChange}
+                        onFocus={openCommand}
                         placeholder="Search anime"
                         disabled={!canPlay}
                         className="caret-ui-fg-base bg-ui-bg-field hover:bg-ui-bg-field-hover border-ui-border-base shadow-buttons-neutral placeholder-ui-fg-muted text-ui-fg-base transition-fg focus:border-ui-border-interactive focus:shadow-borders-active disabled:text-ui-fg-disabled disabled:!bg-ui-bg-disabled disabled:!border-ui-border-base disabled:placeholder-ui-fg-disabled aria-[invalid=true]:!border-ui-border-error aria-[invalid=true]:focus:!shadow-borders-error invalid:!border-ui-border-error invalid:focus:!shadow-borders-error txt-compact-medium relative mb-1 h-10 w-full appearance-none rounded-md border px-3 py-[9px] outline-none disabled:cursor-not-allowed disabled:!shadow-none [&::--webkit-search-cancel-button]:hidden [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden"
@@ -353,51 +326,7 @@ export function DailyPage() {
                                        </div>
                                     ) : null}
                                     {animesLoading && (
-                                       <div className="flex items-center justify-center py-[3rem] text-stone-400">
-                                          <svg
-                                             xmlns="http://www.w3.org/2000/svg"
-                                             width="32"
-                                             height="32"
-                                             viewBox="0 0 24 24"
-                                          >
-                                             <g stroke="currentColor">
-                                                <circle
-                                                   cx="12"
-                                                   cy="12"
-                                                   r="9.5"
-                                                   fill="none"
-                                                   strokeLinecap="round"
-                                                   strokeWidth="3"
-                                                >
-                                                   <animate
-                                                      attributeName="stroke-dasharray"
-                                                      calcMode="spline"
-                                                      dur="1.5s"
-                                                      keySplines="0.42,0,0.58,1;0.42,0,0.58,1;0.42,0,0.58,1"
-                                                      keyTimes="0;0.475;0.95;1"
-                                                      repeatCount="indefinite"
-                                                      values="0 150;42 150;42 150;42 150"
-                                                   />
-                                                   <animate
-                                                      attributeName="stroke-dashoffset"
-                                                      calcMode="spline"
-                                                      dur="1.5s"
-                                                      keySplines="0.42,0,0.58,1;0.42,0,0.58,1;0.42,0,0.58,1"
-                                                      keyTimes="0;0.475;0.95;1"
-                                                      repeatCount="indefinite"
-                                                      values="0;-16;-59;-59"
-                                                   />
-                                                </circle>
-                                                <animateTransform
-                                                   attributeName="transform"
-                                                   dur="2s"
-                                                   repeatCount="indefinite"
-                                                   type="rotate"
-                                                   values="0 12 12;360 12 12"
-                                                />
-                                             </g>
-                                          </svg>
-                                       </div>
+                                       <Loading width={32} height={32} />
                                     )}
                                     {!animesLoading &&
                                     animes &&
