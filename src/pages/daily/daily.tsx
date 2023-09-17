@@ -58,7 +58,6 @@ export function DailyPage() {
             )
       );
    }, [attempts]);
-
    const inputRef = React.useRef<ElementRef<'input'> | null>(null);
 
    const client = useSupabase();
