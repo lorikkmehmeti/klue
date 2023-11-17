@@ -11,9 +11,12 @@ module.exports = {
    plugins: ['react-refresh'],
    rules: {
       'react-refresh/only-export-components': [
-         'warn',
+         'off',
          { allowConstantExport: true },
       ],
+      '@typescript-eslint/no-unsafe-call': 'warn',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      'no-console': 'warn',
    },
    parserOptions: {
       ecmaVersion: 'latest',
@@ -21,4 +24,4 @@ module.exports = {
       project: ['./tsconfig.json', './tsconfig.node.json'],
       tsconfigRootDir: __dirname,
    },
-}
+};
